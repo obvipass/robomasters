@@ -1,9 +1,13 @@
 package Vishruth;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class MecanumDriveTrain {
 
@@ -20,6 +24,8 @@ public class MecanumDriveTrain {
     DcMotor rearLeftDrive;
     DcMotor rearRightDrive;
 
+    IMU imu;
+
     MotorPower frontLeftDriveMP;
     MotorPower frontRightDriveMP;
     MotorPower rearLeftDriveMP;
@@ -30,6 +36,20 @@ public class MecanumDriveTrain {
         this.telemetry = telemetry;
         this.telemetry.addData("Constructor","Ready");
         this.telemetry.update();
+    }
+
+    public void initIMU(){
+        imu = mecanumMap.get(IMU.class,"imu");
+
+        RevHubOrientationOnRobot RevOrientation = new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.UP, RevHubOrientationOnRobot.UsbFacingDirection.LEFT
+        );
+
+        imu.initialize(new IMU.Parameters(RevOrientation));
+    }
+
+    public double getHeading(AngleUnit angleUnit){
+        return imu.getRobotYawPitchRollAngles().getYaw(angleUnit);
     }
 
     public void initDriveTrain() {
@@ -188,4 +208,59 @@ public class MecanumDriveTrain {
 
         stopAllMotors();
     }
+
+    public void driveWithIMU(double GSPK, double distanceInches, double power){
+        int moveCounts = (int) (distanceInches * countsPerInch);
+        imu.resetYaw();
+        int newFrontLeftTarget = frontLeftDrive.getCurrentPosition() + moveCounts;
+        int newFrontRightTarget = frontRightDrive.getCurrentPosition() + moveCounts;
+        int newLeftTarget = frontLeftDrive.getCurrentPosition() + moveCounts;
+        int newRightTarget = frontRightDrive.getCurrentPosition() + moveCounts;
+
+        // Set target positions
+        frontLeftDrive.setTargetPosition(newLeftTarget);
+        rearLeftDrive.setTargetPosition(newLeftTarget);
+        frontRightDrive.setTargetPosition(newRightTarget);
+        rearRightDrive.setTargetPosition(newRightTarget);
+
+        // Set to RUN_TO_POSITION mode
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rearLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rearRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // Record the starting heading
+        double targetAngle = getHeading(AngleUnit.DEGREES);
+
+        // Start motion
+        frontLeftDriveMP.setMotorPower(power);
+        rearLeftDriveMP.setMotorPower(power);
+        frontRightDriveMP.setMotorPower(power);
+        rearRightDriveMP.setMotorPower(power);
+
+         // Proportional gain (tune this!)
+
+        while (frontLeftDrive.isBusy() && frontRightDrive.isBusy() && rearLeftDrive.isBusy() && rearRightDrive.isBusy()) {
+
+            double currentAngle = getHeading(AngleUnit.DEGREES);
+            double error = targetAngle - currentAngle;
+
+            // Keep error in [-180, 180]
+            if (error > 180) error -= 360;
+            if (error < -180) error += 360;
+
+            double correction = GSPK * error;
+
+            double leftPower = power + correction;
+            double rightPower = power - correction;
+
+            // Apply corrected powers
+            frontLeftDriveMP.setMotorPower(leftPower);
+            rearLeftDriveMP.setMotorPower(leftPower);
+            frontRightDriveMP.setMotorPower(rightPower);
+            rearRightDriveMP.setMotorPower(rightPower);
+    }
+
+}
+
 }
