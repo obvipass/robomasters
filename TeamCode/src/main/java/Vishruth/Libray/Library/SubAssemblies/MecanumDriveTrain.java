@@ -1,5 +1,8 @@
 package Vishruth.Libray.Library.SubAssemblies;
 
+import androidx.annotation.NonNull;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
@@ -20,7 +23,7 @@ public class MecanumDriveTrain {
     final double countsPerDegree  = 11.06;
     double GSPK = 0.1;
     Telemetry telemetry;
-    OpMode opMode;
+    LinearOpMode opMode;
 
     HardwareMap mecanumMap;
 
@@ -32,7 +35,8 @@ public class MecanumDriveTrain {
     Motor rearLeftDrive;
     Motor rearRightDrive;
 
-    public MecanumDriveTrain(HardwareMap mecanumMap, OpMode opMode) {
+    //initializations
+    public MecanumDriveTrain(HardwareMap mecanumMap, @NonNull LinearOpMode opMode) {
         this.mecanumMap = mecanumMap;
         this.opMode = opMode;
 
@@ -40,10 +44,6 @@ public class MecanumDriveTrain {
         this.telemetry.addData("Constructor","Ready");
         this.telemetry.update();
     }
-
-
-
-
 
     public void initDriveTrain() {
 
@@ -68,6 +68,7 @@ public class MecanumDriveTrain {
 
     }
 
+    //getters
     public double getSteeringCorrection(double desiredHeading, double proportionalGain) {
         // Determine the heading current error
         double headingError = desiredHeading - imu.getHeading(AngleUnit.DEGREES);
@@ -84,6 +85,7 @@ public class MecanumDriveTrain {
         return frontRightDrive.isBusy && frontLeftDrive.isBusy && rearLeftDrive.isBusy && rearRightDrive.isBusy;
     }
 
+    //all motor methods
     public void stopAllMotors(){
         frontLeftDrive.setPower(0);
         frontRightDrive.setPower(0);
@@ -111,8 +113,8 @@ public class MecanumDriveTrain {
         telemetry.update();
     }
 
-
-    private void moveWithALY(double axial, double lateral, double yaw){
+    //movement
+    public void moveWithALY(double axial, double lateral, double yaw){
 
         /* double frontLeftPower  = axial + lateral + yaw
         double frontRightPower = axial - lateral - yaw
@@ -212,6 +214,7 @@ public class MecanumDriveTrain {
     }
 
     public void driveWithIMUStraight(double GSPK, double distanceInches, double power){
+
         int moveCounts = (int) (distanceInches * countsPerInch);
         imu.resetYaw();
         int newFrontLeftTarget = frontLeftDrive.getCurrentPosition() + moveCounts;
@@ -222,7 +225,7 @@ public class MecanumDriveTrain {
         // Set target positions
         frontLeftDrive.setTargetPosition(newFrontLeftTarget);
         rearLeftDrive.setTargetPosition(newRearLeftTarget);
-        frontRightDrive.setTargetPosition(newFrontLeftTarget);
+        frontRightDrive.setTargetPosition(newFrontRightTarget);
         rearRightDrive.setTargetPosition(newRearRightTarget);
 
         // Set to RUN_TO_POSITION mode
@@ -242,7 +245,7 @@ public class MecanumDriveTrain {
 
          // Proportional gain (tune this!)
 
-        while (frontLeftDrive.isBusy && frontRightDrive.isBusy && rearLeftDrive.isBusy && rearRightDrive.isBusy) {
+        while (allMotorsAreBusy()) {
 
             double currentAngle = imu.getHeading(AngleUnit.DEGREES);
             double error = 0 - currentAngle;
@@ -265,11 +268,10 @@ public class MecanumDriveTrain {
 
 }
 
-
-    public void turnToAngle(double maxTurnSpeed, double heading) {
+    public void turnToAngle(double maxTurnSpeed, double heading, double proportional) {
 
         // Run getSteeringCorrection() once to pre-calculate the current error
-        getSteeringCorrection(heading, GSPK);
+        getSteeringCorrection(heading, proportional);
 
         // keep looping while we are still active, and not on heading
         double turnSpeed = getSteeringCorrection(heading, GSPK);
@@ -319,11 +321,13 @@ public class MecanumDriveTrain {
             // Start driving straight, and then enter the control loop
             moveRobot(driveSpeed, 0);
             double turnSpeed;
+            double distanceRemaining;
             // keep looping while we are still active, and BOTH motors are running.
-            while (allMotorsAreBusy()) {
+            while (allMotorsAreBusy() && opMode.opModeIsActive()) {
 
                 // Determine required steering to keep on heading
                 turnSpeed = getSteeringCorrection(heading, GSPK);
+
 
                 // if driving in reverse, the motor correction also needs to be reversed
                 if (distance < 0)
@@ -359,6 +363,111 @@ public class MecanumDriveTrain {
         frontRightDrive.setPower(rightSpeed);
         rearRightDrive.setPower(rightSpeed);
     }
+
+
+    public void turnToAnglePID(double targetAngle, double maxPower) {
+        double Kp = 0.03;
+        double Ki = 0.0;
+        double Kd = 0.002;
+
+        double error;
+        double integral = 0;
+        double previousError = 0;
+        double derivative;
+
+        long previousTime = System.currentTimeMillis();
+
+        while (opMode.opModeIsActive()) {
+            double currentAngle = imu.getHeading(AngleUnit.DEGREES); // from IMU
+            error = targetAngle - currentAngle;
+
+            // Keep error in [-180, 180]
+            if (error > 180) error -= 360;
+            if (error < -180) error += 360;
+
+            // Time since last loop
+            long currentTime = System.currentTimeMillis();
+            double deltaTime = (currentTime - previousTime) / 1000.0;
+
+            // PID calculations
+            integral += error * deltaTime;
+            derivative = (error - previousError) / deltaTime;
+
+            double output = (Kp * error) + (Ki * integral) + (Kd * derivative);
+
+            // Apply power to motors
+            frontLeftDrive.setPower(output);
+            rearLeftDrive.setPower(output);
+            frontRightDrive.setPower(-output);
+            rearRightDrive.setPower(-output);
+
+            // Break when close enough
+            if (Math.abs(error) <= 1.0) break;
+
+            previousError = error;
+            previousTime = currentTime;
+
+            telemetry.addData("Target", targetAngle);
+            telemetry.addData("Heading", currentAngle);
+            telemetry.addData("Error", error);
+            telemetry.addData("Output", output);
+            telemetry.update();
+        }
+
+        stopAllMotors();
+    }
+
+    public void driveStraightWithDistanceControl(double targetDistance, double maxPower, double heading) {
+        // Reset encoders
+        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rearLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rearRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        setAllMotorRunModesTo(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+        double slowDownDistance = 12.0; // inches before target
+        double minPower = 0.2;
+
+        double startPosition = frontLeftDrive.getCurrentPosition();
+        double distanceTraveled = 0;
+        double distanceRemaining = targetDistance;
+
+        while (opMode.opModeIsActive() && distanceRemaining > 0.5) {  // stop when close
+
+            // Update distance traveled
+            double currentPosition = frontLeftDrive.getCurrentPosition();
+            distanceTraveled = (currentPosition - startPosition) / countsPerInch;
+            distanceRemaining = Math.abs(targetDistance - distanceTraveled);
+
+            // Compute slowdown factor
+            double slowdownFactor = Range.clip(distanceRemaining / slowDownDistance, minPower, 1.0);
+            double drivePower = maxPower * slowdownFactor;
+
+            // Use IMU to correct heading drift
+            double turnCorrection = getSteeringCorrection(heading, 0.05);
+
+            // Move the robot
+            moveRobot(drivePower, turnCorrection);
+
+            // Telemetry feedback
+            telemetry.addData("Target (in)", targetDistance);
+            telemetry.addData("Traveled (in)", distanceTraveled);
+            telemetry.addData("Remaining (in)", distanceRemaining);
+            telemetry.addData("Power", drivePower);
+            telemetry.update();
+        }
+
+        // Stop all motors
+        moveRobot(0, 0);
+    }
+
+
+
+
+
+
 
     /*public void driveWithIMUStraight(double GSPK, double Seconds, double power,double TargetAngle){
 
