@@ -1,4 +1,4 @@
-package Vishruth.Libray.Hardware;
+package Vishruth.Libray.Library.SubAssemblies;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,12 +9,15 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
+import Vishruth.Libray.Library.Hardware.Imu;
+import Vishruth.Libray.Library.Hardware.Motor;
+
 public class MecanumDriveTrain {
 
     final double pulsesPerRevolution = 537.7;
     final double wheelDiameterInches = 4;
     final double countsPerInch = pulsesPerRevolution / (wheelDiameterInches * Math.PI);
-    final double countsPerDegree  = 11.05;
+    final double countsPerDegree  = 11.06;
     double GSPK = 0.1;
     Telemetry telemetry;
     OpMode opMode;
@@ -46,7 +49,10 @@ public class MecanumDriveTrain {
 
         //makes all the motors brake when they are not sent any power
         setAllMotorZeroPowerBehaviorsTo(ZeroPowerBehavior.BRAKE);
-
+        frontLeftDrive = new Motor(mecanumMap.get(DcMotor.class, "front_left_motor"), 1, -1);
+        frontRightDrive = new Motor(mecanumMap.get(DcMotor.class, "front_right_motor"), 1, -1);
+        rearLeftDrive = new Motor(mecanumMap.get(DcMotor.class, "back_left_motor"), 1, -1);
+        rearRightDrive = new Motor(mecanumMap.get(DcMotor.class, "back_right_motor"), 1, -1);
         //sets the correct directions for the motors
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         rearLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -56,10 +62,6 @@ public class MecanumDriveTrain {
 
         imu.initIMU(mecanumMap);
 
-        frontLeftDrive = new Motor(mecanumMap.get(DcMotor.class, "front_left_motor"), 1, -1);
-        frontRightDrive = new Motor(mecanumMap.get(DcMotor.class, "front_right_motor"), 1, -1);
-        rearLeftDrive = new Motor(mecanumMap.get(DcMotor.class, "back_left_motor"), 1, -1);
-        rearRightDrive = new Motor(mecanumMap.get(DcMotor.class, "back_right_motor"), 1, -1);
         telemetry.addData("MotorPower","Ready");
         telemetry.update();
 

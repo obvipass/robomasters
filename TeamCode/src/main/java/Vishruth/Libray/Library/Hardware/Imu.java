@@ -1,4 +1,4 @@
-package Vishruth.Libray.Hardware;
+package Vishruth.Libray.Library.Hardware;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;

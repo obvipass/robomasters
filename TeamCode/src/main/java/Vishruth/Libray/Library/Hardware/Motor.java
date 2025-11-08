@@ -1,4 +1,4 @@
-package Vishruth.Libray.Hardware;
+package Vishruth.Libray.Library.Hardware;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -31,12 +31,12 @@ public class Motor {
         motor.setPower(motorPower);
     }
 
-    boolean isBusy = motor.isBusy();
+    public boolean isBusy = motor.isBusy();
 
     int getTargetPosition(){
         return motor.getTargetPosition();
     }
-    int getCurrentPosition(){
+    public int getCurrentPosition(){
         return motor.getCurrentPosition();
     }
     public void setMode(DcMotor.RunMode R){
