@@ -4,6 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import Vishruth.Libray.Hardware.Motor;
+
 @TeleOp
 public class VishruthCodeTest extends LinearOpMode {
     private ElapsedTime runTime = new ElapsedTime();
@@ -12,10 +15,10 @@ public class VishruthCodeTest extends LinearOpMode {
     private DcMotor rearRightDrive;
     private DcMotor rearLeftDrive;
 
-    private MotorPower frontLeftDriveMP;
-    private MotorPower frontRightDriveMP;
-    private MotorPower rearLeftDriveMP;
-    private MotorPower rearRightDriveMP;
+    private Motor frontLeftDriveMP;
+    private Motor frontRightDriveMP;
+    private Motor rearLeftDriveMP;
+    private Motor rearRightDriveMP;
 
 
     private void move(double axial, double lateral, double yaw){
@@ -24,10 +27,10 @@ public class VishruthCodeTest extends LinearOpMode {
         double backLeftPower   = axial - lateral + yaw
         double backRightPower  = axial + lateral - yaw */
 
-        frontLeftDriveMP.setMotorPower(axial + lateral + yaw);
-        frontRightDriveMP.setMotorPower(axial - lateral - yaw);
-        rearLeftDriveMP.setMotorPower(axial - lateral + yaw);
-        rearRightDriveMP.setMotorPower(axial + lateral - yaw);
+        frontLeftDriveMP.setPower(axial + lateral + yaw);
+        frontRightDriveMP.setPower(axial - lateral - yaw);
+        rearLeftDriveMP.setPower(axial - lateral + yaw);
+        rearRightDriveMP.setPower(axial + lateral - yaw);
 
     }
     @Override
@@ -46,10 +49,10 @@ public class VishruthCodeTest extends LinearOpMode {
         telemetry.addData("Status:","MotorsDirectionsReady");
         telemetry.update();
 
-        frontLeftDriveMP = new MotorPower(frontLeftDrive, 0.2, -0.2);
-        frontRightDriveMP = new MotorPower(frontRightDrive, 0.2, -0.2);
-        rearLeftDriveMP = new MotorPower(rearLeftDrive, 0.2, -0.2);
-        rearRightDriveMP = new MotorPower(rearRightDrive, 0.2, -0.2);
+        frontLeftDriveMP = new Motor(frontLeftDrive, 0.2, -0.2);
+        frontRightDriveMP = new Motor(frontRightDrive, 0.2, -0.2);
+        rearLeftDriveMP = new Motor(rearLeftDrive, 0.2, -0.2);
+        rearRightDriveMP = new Motor(rearRightDrive, 0.2, -0.2);
 
         telemetry.addData("Status:","MotorsReady");
         telemetry.update();
