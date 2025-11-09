@@ -36,9 +36,11 @@ public class Motor {
     int getTargetPosition(){
         return motor.getTargetPosition();
     }
+
     public int getCurrentPosition(){
         return motor.getCurrentPosition();
     }
+
     public void setMode(DcMotor.RunMode R){
         motor.setMode(R);
     }

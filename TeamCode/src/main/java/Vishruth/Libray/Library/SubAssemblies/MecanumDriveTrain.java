@@ -175,6 +175,47 @@ public class MecanumDriveTrain {
         stopAllMotors();
     }
 
+    public void moveInchesWithOvershootCorrection(double speed, double leftInches, double rightInches) {
+
+        int newFrontLeftTarget;
+        int newFrontRightTarget;
+        int newRearLeftTarget;
+        int newRearRightTarget;
+
+        double constantOvershoot = 0.5;
+
+        setAllMotorZeroPowerBehaviorsTo(ZeroPowerBehavior.BRAKE);
+
+        newFrontLeftTarget = frontLeftDrive.getCurrentPosition() + (int) ((leftInches-constantOvershoot) * countsPerInch);
+        newFrontRightTarget = frontRightDrive.getCurrentPosition() + (int) ((rightInches-constantOvershoot) * countsPerInch);
+        newRearLeftTarget = rearLeftDrive.getCurrentPosition() + (int) ((leftInches - constantOvershoot) * countsPerInch);
+        newRearRightTarget = rearRightDrive.getCurrentPosition() + (int) ((rightInches-constantOvershoot) * countsPerInch);
+        telemetry.addData("targetPositions","%i,%i,%i,%i",newFrontLeftTarget,newFrontLeftTarget,newRearRightTarget,newRearLeftTarget);
+        telemetry.update();
+
+        frontRightDrive.setTargetPosition(newFrontRightTarget);
+        frontLeftDrive.setTargetPosition(newFrontLeftTarget);
+        rearRightDrive.setTargetPosition(newRearRightTarget);
+        rearLeftDrive.setTargetPosition(newRearLeftTarget);
+        telemetry.addData("target positions","inputted");
+        telemetry.update();
+
+        frontRightDrive.setPower(Math.abs(speed));
+        frontLeftDrive.setPower(Math.abs(speed));
+        rearRightDrive.setPower(Math.abs(speed));
+        rearLeftDrive.setPower(Math.abs(speed));
+        telemetry.addData("Speed",speed);
+        telemetry.update();
+
+        setAllMotorRunModesTo(DcMotor.RunMode.RUN_TO_POSITION);
+        while (allMotorsAreBusy()){
+            telemetry.addData("Moving","");
+            telemetry.update();
+        }
+
+        stopAllMotors();
+    }
+
     public void moveDegrees(int degrees,double speed){
         double newFrontLeftTarget;
         double newFrontRightTarget;
@@ -427,14 +468,13 @@ public class MecanumDriveTrain {
         setAllMotorRunModesTo(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
-        double slowDownDistance = 12.0; // inches before target
         double minPower = 0.2;
 
         double startPosition = frontLeftDrive.getCurrentPosition();
         double distanceTraveled = 0;
         double distanceRemaining = targetDistance;
 
-        while (opMode.opModeIsActive() && distanceRemaining > 0.5) {  // stop when close
+        while (opMode.opModeIsActive() && allMotorsAreBusy()) {  // stop when close
 
             // Update distance traveled
             double currentPosition = frontLeftDrive.getCurrentPosition();
@@ -442,7 +482,7 @@ public class MecanumDriveTrain {
             distanceRemaining = Math.abs(targetDistance - distanceTraveled);
 
             // Compute slowdown factor
-            double slowdownFactor = Range.clip(distanceRemaining / slowDownDistance, minPower, 1.0);
+            double slowdownFactor = Range.clip(distanceRemaining / 10, minPower, 1.0);
             double drivePower = maxPower * slowdownFactor;
 
             // Use IMU to correct heading drift
