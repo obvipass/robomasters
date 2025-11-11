@@ -1,9 +1,8 @@
-package Vishruth.Libray.Library.SubAssemblies;
+package Vishruth.Library.Library.SubAssemblies;
 
 import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -12,8 +11,8 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-import Vishruth.Libray.Library.Hardware.Imu;
-import Vishruth.Libray.Library.Hardware.Motor;
+import Vishruth.Library.Library.Hardware.Imu;
+import Vishruth.Library.Library.Hardware.Motor;
 
 public class MecanumDriveTrain {
 
@@ -27,8 +26,7 @@ public class MecanumDriveTrain {
 
     HardwareMap mecanumMap;
 
-
-    Imu imu;
+    Imu imu = new Imu();
 
     Motor frontLeftDrive;
     Motor frontRightDrive;
@@ -36,19 +34,20 @@ public class MecanumDriveTrain {
     Motor rearRightDrive;
 
     //initializations
-    public MecanumDriveTrain(HardwareMap mecanumMap, @NonNull LinearOpMode opMode) {
-        this.mecanumMap = mecanumMap;
+    public MecanumDriveTrain(@NonNull LinearOpMode opMode) {
+        this.mecanumMap = opMode.hardwareMap;
         this.opMode = opMode;
 
         this.telemetry = opMode.telemetry;
         this.telemetry.addData("Constructor","Ready");
         this.telemetry.update();
+
+        initDriveTrain();
     }
 
     public void initDriveTrain() {
 
         //makes all the motors brake when they are not sent any power
-        setAllMotorZeroPowerBehaviorsTo(ZeroPowerBehavior.BRAKE);
         frontLeftDrive = new Motor(mecanumMap.get(DcMotor.class, "front_left_motor"), 1, -1);
         frontRightDrive = new Motor(mecanumMap.get(DcMotor.class, "front_right_motor"), 1, -1);
         rearLeftDrive = new Motor(mecanumMap.get(DcMotor.class, "back_left_motor"), 1, -1);
@@ -60,6 +59,9 @@ public class MecanumDriveTrain {
         rearRightDrive.setDirection(DcMotor.Direction.FORWARD);
         telemetry.addData("Motor Directions", "Ready");
 
+        setAllMotorZeroPowerBehaviorsTo(ZeroPowerBehavior.BRAKE);
+        telemetry.addData("ZeroPowerBehavior", "Ready");
+        telemetry.update();
         imu.initIMU(mecanumMap);
 
         telemetry.addData("MotorPower","Ready");
@@ -82,7 +84,7 @@ public class MecanumDriveTrain {
     }
 
     public boolean allMotorsAreBusy(){
-        return frontRightDrive.isBusy && frontLeftDrive.isBusy && rearLeftDrive.isBusy && rearRightDrive.isBusy;
+        return frontRightDrive.isBusy() && frontLeftDrive.isBusy() && rearLeftDrive.isBusy() && rearRightDrive.isBusy();
     }
 
     //all motor methods
@@ -112,7 +114,6 @@ public class MecanumDriveTrain {
         telemetry.addData("Motors ZeroPowerBehaviorSetTo", z );
         telemetry.update();
     }
-
     //movement
     public void moveWithALY(double axial, double lateral, double yaw){
 
@@ -175,7 +176,48 @@ public class MecanumDriveTrain {
         stopAllMotors();
     }
 
-    public void moveInchesWithOvershootCorrection(double speed, double leftInches, double rightInches) {
+    public void moveInchesWithCOC(double speed, double leftInches, double rightInches) {
+
+        int newFrontLeftTarget;
+        int newFrontRightTarget;
+        int newRearLeftTarget;
+        int newRearRightTarget;
+
+        double constantOvershoot = 1.65;
+
+        setAllMotorZeroPowerBehaviorsTo(ZeroPowerBehavior.BRAKE);
+
+        newFrontLeftTarget = frontLeftDrive.getCurrentPosition() + (int) ((leftInches-constantOvershoot) * countsPerInch);
+        newFrontRightTarget = frontRightDrive.getCurrentPosition() + (int) ((rightInches-constantOvershoot) * countsPerInch);
+        newRearLeftTarget = rearLeftDrive.getCurrentPosition() + (int) ((leftInches - constantOvershoot) * countsPerInch);
+        newRearRightTarget = rearRightDrive.getCurrentPosition() + (int) ((rightInches-constantOvershoot) * countsPerInch);
+        telemetry.addData("targetPositions","%i,%i,%i,%i",newFrontLeftTarget,newFrontLeftTarget,newRearRightTarget,newRearLeftTarget);
+        telemetry.update();
+
+        frontRightDrive.setTargetPosition(newFrontRightTarget);
+        frontLeftDrive.setTargetPosition(newFrontLeftTarget);
+        rearRightDrive.setTargetPosition(newRearRightTarget);
+        rearLeftDrive.setTargetPosition(newRearLeftTarget);
+        telemetry.addData("target positions","inputted");
+        telemetry.update();
+
+        frontRightDrive.setPower(Math.abs(speed));
+        frontLeftDrive.setPower(Math.abs(speed));
+        rearRightDrive.setPower(Math.abs(speed));
+        rearLeftDrive.setPower(Math.abs(speed));
+        telemetry.addData("Speed",speed);
+        telemetry.update();
+
+        setAllMotorRunModesTo(DcMotor.RunMode.RUN_TO_POSITION);
+        while (allMotorsAreBusy()){
+            telemetry.addData("Moving","");
+            telemetry.update();
+        }
+
+        stopAllMotors();
+    }
+
+    public void moveInchesWithCPOC(double speed, double leftInches, double rightInches) {
 
         int newFrontLeftTarget;
         int newFrontRightTarget;
@@ -183,12 +225,14 @@ public class MecanumDriveTrain {
         int newRearRightTarget;
 
         double constantOvershoot = 0.5;
+        double proportionalOvershootPerInch = 0.1;
+        double correction = 1 - (1/(1 + proportionalOvershootPerInch));
 
         setAllMotorZeroPowerBehaviorsTo(ZeroPowerBehavior.BRAKE);
 
-        newFrontLeftTarget = frontLeftDrive.getCurrentPosition() + (int) ((leftInches-constantOvershoot) * countsPerInch);
-        newFrontRightTarget = frontRightDrive.getCurrentPosition() + (int) ((rightInches-constantOvershoot) * countsPerInch);
-        newRearLeftTarget = rearLeftDrive.getCurrentPosition() + (int) ((leftInches - constantOvershoot) * countsPerInch);
+        newFrontLeftTarget = frontLeftDrive.getCurrentPosition() + (int) ((leftInches*correction-constantOvershoot) * countsPerInch);
+        newFrontRightTarget = frontRightDrive.getCurrentPosition() + (int) ((rightInches*correction-constantOvershoot) * countsPerInch);
+        newRearLeftTarget = rearLeftDrive.getCurrentPosition() + (int) ((leftInches*correction-constantOvershoot) * countsPerInch);
         newRearRightTarget = rearRightDrive.getCurrentPosition() + (int) ((rightInches-constantOvershoot) * countsPerInch);
         telemetry.addData("targetPositions","%i,%i,%i,%i",newFrontLeftTarget,newFrontLeftTarget,newRearRightTarget,newRearLeftTarget);
         telemetry.update();
@@ -254,7 +298,7 @@ public class MecanumDriveTrain {
         stopAllMotors();
     }
 
-    public void driveWithIMUStraight(double GSPK, double distanceInches, double power){
+    public void driveIMU(double GSPK, double distanceInches, double power){
 
         int moveCounts = (int) (distanceInches * countsPerInch);
         imu.resetYaw();
@@ -336,9 +380,7 @@ public class MecanumDriveTrain {
         moveRobot(0, 0);
     }
 
-    public void driveStraight(double driveSpeed,
-                              double distance,
-                              double heading) {
+    public void driveStraight(double driveSpeed, double distance, double heading) {
 
         // Ensure that the OpMode is still active
 
@@ -404,7 +446,6 @@ public class MecanumDriveTrain {
         frontRightDrive.setPower(rightSpeed);
         rearRightDrive.setPower(rightSpeed);
     }
-
 
     public void turnToAnglePID(double targetAngle, double maxPower) {
         double Kp = 0.03;

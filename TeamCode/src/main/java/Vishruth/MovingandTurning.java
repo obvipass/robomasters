@@ -2,7 +2,7 @@ package Vishruth;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import Vishruth.Libray.Library.SubAssemblies.MecanumDriveTrain;
+import Vishruth.Library.Library.SubAssemblies.MecanumDriveTrain;
 
 public class MovingandTurning extends LinearOpMode {
 
@@ -16,7 +16,7 @@ public class MovingandTurning extends LinearOpMode {
     MecanumDriveTrain mecanumDriveTrain;
 
     public void runOpMode(){
-        mecanumDriveTrain = new MecanumDriveTrain(hardwareMap,telemetry);
+        mecanumDriveTrain = new MecanumDriveTrain(this);
         mecanumDriveTrain.initDriveTrain();
 
         waitForStart();

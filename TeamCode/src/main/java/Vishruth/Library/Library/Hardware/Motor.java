@@ -1,7 +1,6 @@
-package Vishruth.Libray.Library.Hardware;
+package Vishruth.Library.Library.Hardware;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
 /**
@@ -31,8 +30,9 @@ public class Motor {
         motor.setPower(motorPower);
     }
 
-    public boolean isBusy = motor.isBusy();
-
+    public boolean isBusy(){
+        return this.motor.isBusy();
+    }
     int getTargetPosition(){
         return motor.getTargetPosition();
     }
@@ -53,7 +53,7 @@ public class Motor {
         motor.setTargetPosition(i);
     }
 
-    public void setDirection(DcMotorSimple.Direction d){
+    public void setDirection(DcMotor.Direction d){
         motor.setDirection(d);
     }
     /**
