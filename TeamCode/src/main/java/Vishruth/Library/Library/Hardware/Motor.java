@@ -13,8 +13,8 @@ public class Motor {
     private double motorPower;
 
     public Motor(DcMotor motor, double motorPowerMax, double motorPowerMin) {
-        this.motorPowerMax = Math.min(motorPowerMax, 1.0);
-        this.motorPowerMin = Math.max(motorPowerMin, -1.0);
+        this.motorPowerMax = Range.clip(motorPowerMax,0,1);
+        this.motorPowerMin = Range.clip(motorPowerMin,-1,0);
         this.motor = motor;
         this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

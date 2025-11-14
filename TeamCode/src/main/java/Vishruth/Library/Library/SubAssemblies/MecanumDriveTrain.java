@@ -21,6 +21,11 @@ public class MecanumDriveTrain {
     final double countsPerInch = pulsesPerRevolution / (wheelDiameterInches * Math.PI);
     final double countsPerDegree  = 11.06;
     double GSPK = 0.1;
+
+    double KP = 0.01;
+    double KI = 0.0001;
+    double KD = 0.001;
+
     Telemetry telemetry;
     LinearOpMode opMode;
 
@@ -215,6 +220,13 @@ public class MecanumDriveTrain {
         }
 
         stopAllMotors();
+    }
+
+    public void setAllMotorPowersTo(double power){
+        frontLeftDrive.setPower(power);
+        frontRightDrive.setPower(power);
+        frontLeftDrive.setPower(power);
+        frontLeftDrive.setPower(power);
     }
 
     public void moveInchesWithCPOC(double speed, double leftInches, double rightInches) {
@@ -506,14 +518,18 @@ public class MecanumDriveTrain {
         frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rearRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        imu.resetYaw();
+
         setAllMotorRunModesTo(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
         double minPower = 0.2;
 
         double startPosition = frontLeftDrive.getCurrentPosition();
-        double distanceTraveled = 0;
-        double distanceRemaining = targetDistance;
+        double distanceTraveled;
+        double distanceRemaining;
+        double sumOFErrors = 0;
+        double previousError = 0;
 
         while (opMode.opModeIsActive() && allMotorsAreBusy()) {  // stop when close
 
@@ -521,10 +537,12 @@ public class MecanumDriveTrain {
             double currentPosition = frontLeftDrive.getCurrentPosition();
             distanceTraveled = (currentPosition - startPosition) / countsPerInch;
             distanceRemaining = Math.abs(targetDistance - distanceTraveled);
+            sumOFErrors = sumOFErrors + distanceRemaining;
 
-            // Compute slowdown factor
-            double slowdownFactor = Range.clip(distanceRemaining / 10, minPower, 1.0);
-            double drivePower = maxPower * slowdownFactor;
+            double drivePower = Math.min(calculatePIDPower(distanceRemaining,sumOFErrors,previousError),maxPower);
+
+
+
 
             // Use IMU to correct heading drift
             double turnCorrection = getSteeringCorrection(heading, 0.05);
@@ -538,10 +556,24 @@ public class MecanumDriveTrain {
             telemetry.addData("Remaining (in)", distanceRemaining);
             telemetry.addData("Power", drivePower);
             telemetry.update();
+
+            previousError = distanceRemaining;
         }
 
         // Stop all motors
         moveRobot(0, 0);
+    }
+
+    public double calculatePIDPower(double error, double sumOfAllPastErrors, double previousError){
+
+
+        double proportionalCorrection = error * KP;
+        double integralCorrection = sumOfAllPastErrors * KI ;
+        double derivativeCorrection = (error-previousError) * KD;
+
+        return proportionalCorrection + Range.clip(integralCorrection,0,0.5)+ derivativeCorrection;
+
+
     }
 
 

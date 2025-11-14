@@ -13,6 +13,6 @@ public class OvershootCorrection extends LinearOpMode {
     public void runOpMode() {
         mecanumDriveTrain = new MecanumDriveTrain(this);
         waitForStart();
-        mecanumDriveTrain.moveInchesWithCOC(0.5,45,45);
+        mecanumDriveTrain.driveStraightWithDistanceControl(0.5,0.2,0);
     }
 }
