@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -22,9 +23,9 @@ public class MecanumDriveTrain {
     final double countsPerDegree  = 11.06;
     double GSPK = 0.1;
 
-    double KP = 0.01;
-    double KI = 0.0001;
-    double KD = 0.001;
+    double KP = 0.1;
+    double KI = 0.1;
+    double KD = 0.1;
 
     Telemetry telemetry;
     LinearOpMode opMode;
@@ -119,6 +120,56 @@ public class MecanumDriveTrain {
         telemetry.addData("Motors ZeroPowerBehaviorSetTo", z );
         telemetry.update();
     }
+
+    /*public void activelyResistChange(double milliseconds) {
+
+        // Hold current position
+        int frontLeftTarget = frontLeftDrive.getCurrentPosition();
+        int frontRightTarget = frontRightDrive.getCurrentPosition();
+        int rearRightTarget = rearRightDrive.getCurrentPosition();
+        int rearLeftTarget = rearLeftDrive.getCurrentPosition();
+
+        // Must be in RUN_TO_POSITION
+        frontLeftDrive.setTargetPosition(frontLeftTarget);
+        frontRightDrive.setTargetPosition(frontRightTarget);
+        rearLeftDrive.setTargetPosition(rearLeftTarget);
+        rearRightDrive.setTargetPosition(rearRightTarget);
+        setAllMotorRunModesTo(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        // Power needed to hold position
+        setAllMotorPowersTo(0.3);  // adjust if needed
+
+        ElapsedTime timer = new ElapsedTime();
+
+        while (timer.milliseconds() < milliseconds) {
+
+            int frontLeftDriveCurrentPosition = frontLeftDrive.getCurrentPosition();
+            int frontRightDriveCurrentPosition = frontRightDrive.getCurrentPosition();
+            int rearRightDriveCurrentPosition = rearRightDrive.getCurrentPosition();
+            int rearLeftDriveCurrentPosition = rearLeftDrive.getCurrentPosition();
+
+            double frontLeftError = frontLeftTarget - frontLeftDriveCurrentPosition;
+            double frontRightError = frontRightTarget - frontRightDriveCurrentPosition;
+            double rearLeftError = rearLeftTarget - rearLeftDriveCurrentPosition;
+            double rearRightError = rearRightTarget - rearRightDriveCurrentPosition;
+
+            // If pushed, command motor back to position
+            if (Math.abs(frontLeftError) > 5 && Math.abs(rearLeftError)>5 && Math.abs(frontRightError) > 5 && Math.abs(rearRightError) > 5) {   // deadband of 5 ticks
+                frontLeftDrive.setTargetPosition(frontLeftTarget);
+                frontRightDrive.setTargetPosition(frontRightTarget);
+                rearLeftDrive.setTargetPosition(rearLeftTarget);
+                rearRightDrive.setTargetPosition(rearRightTarget);
+                opMode.idle();
+            }
+
+        }
+
+        // Stop holding
+        setAllMotorPowersTo(0);
+        setAllMotorRunModesTo(DcMotor.RunMode.RUN_USING_ENCODER);
+    }*/
+
     //movement
     public void moveWithALY(double axial, double lateral, double yaw){
 
@@ -225,8 +276,8 @@ public class MecanumDriveTrain {
     public void setAllMotorPowersTo(double power){
         frontLeftDrive.setPower(power);
         frontRightDrive.setPower(power);
-        frontLeftDrive.setPower(power);
-        frontLeftDrive.setPower(power);
+        rearRightDrive.setPower(power);
+        rearLeftDrive.setPower(power);
     }
 
     public void moveInchesWithCPOC(double speed, double leftInches, double rightInches) {
@@ -511,14 +562,14 @@ public class MecanumDriveTrain {
         stopAllMotors();
     }
 
-    public void driveStraightWithDistanceControl(double targetDistance, double maxPower, double heading) {
+    /*public void driveStraightWithDistanceControl(double targetDistance, double maxPower, double heading) {
         // Reset encoders
-        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rearLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rearRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setAllMotorRunModesTo(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         imu.resetYaw();
+
+        telemetry.addData("Yaw","Reset");
+        telemetry.update();
 
         setAllMotorRunModesTo(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -531,13 +582,14 @@ public class MecanumDriveTrain {
         double sumOFErrors = 0;
         double previousError = 0;
 
-        while (opMode.opModeIsActive() && allMotorsAreBusy()) {  // stop when close
+        while (opMode.opModeIsActive()) {  // stop when close
 
             // Update distance traveled
             double currentPosition = frontLeftDrive.getCurrentPosition();
             distanceTraveled = (currentPosition - startPosition) / countsPerInch;
-            distanceRemaining = Math.abs(targetDistance - distanceTraveled);
+            distanceRemaining = targetDistance - distanceTraveled;
             sumOFErrors = sumOFErrors + distanceRemaining;
+
 
             double drivePower = Math.min(calculatePIDPower(distanceRemaining,sumOFErrors,previousError),maxPower);
 
@@ -557,21 +609,134 @@ public class MecanumDriveTrain {
             telemetry.addData("Power", drivePower);
             telemetry.update();
 
+            if(Math.abs(distanceRemaining)<0.25){
+                break;
+            }
+
             previousError = distanceRemaining;
         }
 
         // Stop all motors
         moveRobot(0, 0);
+    }*/
+
+    public void driveStraightWithDistanceControl(double targetDistance, double maxPower, double heading) {
+
+        setAllMotorRunModesTo(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setAllMotorZeroPowerBehaviorsTo(ZeroPowerBehavior.BRAKE);
+        imu.resetYaw();
+        setAllMotorRunModesTo(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        double minPower = 0.2;
+
+        double startPos = frontLeftDrive.getCurrentPosition();
+        double sumOfErrors = 0;
+        double previousError = 0;
+
+        while (opMode.opModeIsActive()) {
+
+            // Calculate distance traveled
+            double currentPos = frontLeftDrive.getCurrentPosition();
+            double distanceTraveled = (currentPos - startPos) / countsPerInch;
+
+            // Signed error
+            double error = targetDistance - distanceTraveled;
+
+            // Exit condition
+            if (Math.abs(error) < 0.25) {
+                brake(10);
+                setAllMotorPowersTo(0);
+                setAllMotorRunModesTo(DcMotor.RunMode.RUN_USING_ENCODER);
+                opMode.sleep(1000);
+                opMode.idle();
+                break;
+            }
+
+            // Anti-windup: only integrate when close
+            if (Math.abs(error) < 5) {
+                sumOfErrors += error;
+            } else {
+                sumOfErrors = 0;
+            }
+
+            // PID output
+            double drivePower = calculatePIDPower(error, sumOfErrors, previousError);
+
+            // Clip power
+            drivePower = Range.clip(drivePower, minPower, maxPower);
+
+            // Heading correction
+            double turnCorrection = getSteeringCorrection(heading, 0.05);
+
+            // Move robot
+            moveRobot(drivePower, turnCorrection);
+
+            telemetry.addData("Target", targetDistance);
+            telemetry.addData("Traveled", distanceTraveled);
+            telemetry.addData("Error", error);
+            telemetry.addData("Power", drivePower);
+            telemetry.update();
+
+            previousError = error;
+        }
+
+        moveRobot(0, 0);
     }
+
+    public void brake(long holdTimeMs) {
+
+        // ROBOT SHOULD ALREADY BE IN BRAKE ZERO-POWER MODE
+        setAllMotorZeroPowerBehaviorsTo(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        // Read target hold positions (encoder ticks)
+        int flTarget = frontLeftDrive.getCurrentPosition();
+        int frTarget = frontRightDrive.getCurrentPosition();
+        int rlTarget = rearLeftDrive.getCurrentPosition();
+        int rrTarget = rearRightDrive.getCurrentPosition();
+
+        double KP = 0.01;       // proportional gain for holding
+        double maxHoldPower = 0.3;   // limit to protect motors
+
+        ElapsedTime timer = new ElapsedTime();
+
+        // Run lightweight PID loop
+        while (opMode.opModeIsActive() && timer.milliseconds() < holdTimeMs) {
+
+            // Compute position errors
+            double flError = flTarget - frontLeftDrive.getCurrentPosition();
+            double frError = frTarget - frontRightDrive.getCurrentPosition();
+            double rlError = rlTarget - rearLeftDrive.getCurrentPosition();
+            double rrError = rrTarget - rearRightDrive.getCurrentPosition();
+
+            // Compute hold power based on P only (I and D not needed)
+            double flPower = Range.clip(flError * KP, -maxHoldPower, maxHoldPower);
+            double frPower = Range.clip(frError * KP, -maxHoldPower, maxHoldPower);
+            double rlPower = Range.clip(rlError * KP, -maxHoldPower, maxHoldPower);
+            double rrPower = Range.clip(rrError * KP, -maxHoldPower, maxHoldPower);
+
+            // Apply holding power
+            frontLeftDrive.setPower(flPower);
+            frontRightDrive.setPower(frPower);
+            rearLeftDrive.setPower(rlPower);
+            rearRightDrive.setPower(rrPower);
+
+            opMode.idle();
+        }
+
+        // Stop applying hold power after time expires
+        setAllMotorPowersTo(0);
+    }
+
+
 
     public double calculatePIDPower(double error, double sumOfAllPastErrors, double previousError){
 
 
         double proportionalCorrection = error * KP;
         double integralCorrection = sumOfAllPastErrors * KI ;
-        double derivativeCorrection = (error-previousError) * KD;
+        double derivativeCorrection = (previousError-error) * KD;
 
-        return proportionalCorrection + Range.clip(integralCorrection,0,0.5)+ derivativeCorrection;
+        return proportionalCorrection + Range.clip(integralCorrection,-0.5,0.5)+ derivativeCorrection;
 
 
     }

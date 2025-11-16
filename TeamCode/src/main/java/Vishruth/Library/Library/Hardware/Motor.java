@@ -1,6 +1,7 @@
 package Vishruth.Library.Library.Hardware;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 /**
@@ -62,5 +63,6 @@ public class Motor {
     public double getMotorPower() {
         return motorPower;
     }
+
 
 }
