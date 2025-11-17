@@ -8,11 +8,10 @@ import Vishruth.Library.Library.SubAssemblies.MecanumDriveTrain;
 public class OvershootCorrection extends LinearOpMode {
 
     MecanumDriveTrain mecanumDriveTrain;
-
     @Override
     public void runOpMode() {
         mecanumDriveTrain = new MecanumDriveTrain(this);
         waitForStart();
-        mecanumDriveTrain.driveStraightWithDistanceControl(45,0.2,0);
-    }
+        mecanumDriveTrain.driveStraightWithDistanceControl(60,0.2,0);
+}
 }
