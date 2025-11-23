@@ -122,55 +122,61 @@ public class MecanumDriveTrain {
         telemetry.update();
     }
 
-    /*public void activelyResistChange(double milliseconds) {
+    public void setAllMotorPowersTo(double power){
+        frontLeftDrive.setPower(power);
+        frontRightDrive.setPower(power);
+        rearRightDrive.setPower(power);
+        rearLeftDrive.setPower(power);
+        telemetry.addData("Power",power);
+        telemetry.update();
+    }
 
-        // Hold current position
-        int frontLeftTarget = frontLeftDrive.getCurrentPosition();
-        int frontRightTarget = frontRightDrive.getCurrentPosition();
-        int rearRightTarget = rearRightDrive.getCurrentPosition();
-        int rearLeftTarget = rearLeftDrive.getCurrentPosition();
+    public void brake(long holdTimeMs) {
 
-        // Must be in RUN_TO_POSITION
-        frontLeftDrive.setTargetPosition(frontLeftTarget);
-        frontRightDrive.setTargetPosition(frontRightTarget);
-        rearLeftDrive.setTargetPosition(rearLeftTarget);
-        rearRightDrive.setTargetPosition(rearRightTarget);
-        setAllMotorRunModesTo(DcMotor.RunMode.RUN_TO_POSITION);
+        // ROBOT SHOULD ALREADY BE IN BRAKE ZERO-POWER MODE
+        setAllMotorZeroPowerBehaviorsTo(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        // Read target hold positions (encoder ticks)
+        int flTarget = frontLeftDrive.getCurrentPosition();
+        int frTarget = frontRightDrive.getCurrentPosition();
+        int rlTarget = rearLeftDrive.getCurrentPosition();
+        int rrTarget = rearRightDrive.getCurrentPosition();
 
-        // Power needed to hold position
-        setAllMotorPowersTo(0.3);  // adjust if needed
+        double KP = 0.01;       // proportional gain for holding
+        double maxHoldPower = 0.3;   // limit to protect motors
 
         ElapsedTime timer = new ElapsedTime();
 
-        while (timer.milliseconds() < milliseconds) {
+        // Run lightweight PID loop
+        while (opMode.opModeIsActive() && timer.milliseconds() < holdTimeMs) {
 
-            int frontLeftDriveCurrentPosition = frontLeftDrive.getCurrentPosition();
-            int frontRightDriveCurrentPosition = frontRightDrive.getCurrentPosition();
-            int rearRightDriveCurrentPosition = rearRightDrive.getCurrentPosition();
-            int rearLeftDriveCurrentPosition = rearLeftDrive.getCurrentPosition();
+            // Compute position errors
+            double flError = flTarget - frontLeftDrive.getCurrentPosition();
+            double frError = frTarget - frontRightDrive.getCurrentPosition();
+            double rlError = rlTarget - rearLeftDrive.getCurrentPosition();
+            double rrError = rrTarget - rearRightDrive.getCurrentPosition();
 
-            double frontLeftError = frontLeftTarget - frontLeftDriveCurrentPosition;
-            double frontRightError = frontRightTarget - frontRightDriveCurrentPosition;
-            double rearLeftError = rearLeftTarget - rearLeftDriveCurrentPosition;
-            double rearRightError = rearRightTarget - rearRightDriveCurrentPosition;
+            // Compute hold power based on P only (I and D not needed)
+            double flPower = Range.clip(flError * KP, -maxHoldPower, maxHoldPower);
+            double frPower = Range.clip(frError * KP, -maxHoldPower, maxHoldPower);
+            double rlPower = Range.clip(rlError * KP, -maxHoldPower, maxHoldPower);
+            double rrPower = Range.clip(rrError * KP, -maxHoldPower, maxHoldPower);
 
-            // If pushed, command motor back to position
-            if (Math.abs(frontLeftError) > 5 && Math.abs(rearLeftError)>5 && Math.abs(frontRightError) > 5 && Math.abs(rearRightError) > 5) {   // deadband of 5 ticks
-                frontLeftDrive.setTargetPosition(frontLeftTarget);
-                frontRightDrive.setTargetPosition(frontRightTarget);
-                rearLeftDrive.setTargetPosition(rearLeftTarget);
-                rearRightDrive.setTargetPosition(rearRightTarget);
-                opMode.idle();
-            }
+            // Apply holding power
+            frontLeftDrive.setPower(flPower);
+            frontRightDrive.setPower(frPower);
+            rearLeftDrive.setPower(rlPower);
+            rearRightDrive.setPower(rrPower);
 
+            telemetry.addData("Braking",holdTimeMs);
+            telemetry.update();
+
+            opMode.idle();
         }
 
-        // Stop holding
+        // Stop applying hold power after time expires
         setAllMotorPowersTo(0);
-        setAllMotorRunModesTo(DcMotor.RunMode.RUN_USING_ENCODER);
-    }*/
-
+    }
     //movement
     public void moveWithALY(double axial, double lateral, double yaw){
 
@@ -233,136 +239,7 @@ public class MecanumDriveTrain {
         stopAllMotors();
     }
 
-//    public void moveInchesWithCOC(double speed, double leftInches, double rightInches) {
-//
-//        int newFrontLeftTarget;
-//        int newFrontRightTarget;
-//        int newRearLeftTarget;
-//        int newRearRightTarget;
-//
-//        double constantOvershoot = 1.65;
-//
-//        setAllMotorZeroPowerBehaviorsTo(ZeroPowerBehavior.BRAKE);
-//
-//        newFrontLeftTarget = frontLeftDrive.getCurrentPosition() + (int) ((leftInches-constantOvershoot) * countsPerInch);
-//        newFrontRightTarget = frontRightDrive.getCurrentPosition() + (int) ((rightInches-constantOvershoot) * countsPerInch);
-//        newRearLeftTarget = rearLeftDrive.getCurrentPosition() + (int) ((leftInches - constantOvershoot) * countsPerInch);
-//        newRearRightTarget = rearRightDrive.getCurrentPosition() + (int) ((rightInches-constantOvershoot) * countsPerInch);
-//        telemetry.addData("targetPositions","%i,%i,%i,%i",newFrontLeftTarget,newFrontLeftTarget,newRearRightTarget,newRearLeftTarget);
-//        telemetry.update();
-//
-//        frontRightDrive.setTargetPosition(newFrontRightTarget);
-//        frontLeftDrive.setTargetPosition(newFrontLeftTarget);
-//        rearRightDrive.setTargetPosition(newRearRightTarget);
-//        rearLeftDrive.setTargetPosition(newRearLeftTarget);
-//        telemetry.addData("target positions","inputted");
-//        telemetry.update();
-//
-//        frontRightDrive.setPower(Math.abs(speed));
-//        frontLeftDrive.setPower(Math.abs(speed));
-//        rearRightDrive.setPower(Math.abs(speed));
-//        rearLeftDrive.setPower(Math.abs(speed));
-//        telemetry.addData("Speed",speed);
-//        telemetry.update();
-//
-//        setAllMotorRunModesTo(DcMotor.RunMode.RUN_TO_POSITION);
-//        while (allMotorsAreBusy()){
-//            telemetry.addData("Moving","");
-//            telemetry.update();
-//        }
-//
-//        stopAllMotors();
-//    }
 
-    public void setAllMotorPowersTo(double power){
-        frontLeftDrive.setPower(power);
-        frontRightDrive.setPower(power);
-        rearRightDrive.setPower(power);
-        rearLeftDrive.setPower(power);
-        telemetry.addData("Power",power);
-        telemetry.update();
-    }
-
-//    public void moveInchesWithCPOC(double speed, double leftInches, double rightInches) {
-//
-//        int newFrontLeftTarget;
-//        int newFrontRightTarget;
-//        int newRearLeftTarget;
-//        int newRearRightTarget;
-//
-//        double constantOvershoot = 0.5;
-//        double proportionalOvershootPerInch = 0.1;
-//        double correction = 1 - (1/(1 + proportionalOvershootPerInch));
-//
-//        setAllMotorZeroPowerBehaviorsTo(ZeroPowerBehavior.BRAKE);
-//
-//        newFrontLeftTarget = frontLeftDrive.getCurrentPosition() + (int) ((leftInches*correction-constantOvershoot) * countsPerInch);
-//        newFrontRightTarget = frontRightDrive.getCurrentPosition() + (int) ((rightInches*correction-constantOvershoot) * countsPerInch);
-//        newRearLeftTarget = rearLeftDrive.getCurrentPosition() + (int) ((leftInches*correction-constantOvershoot) * countsPerInch);
-//        newRearRightTarget = rearRightDrive.getCurrentPosition() + (int) ((rightInches-constantOvershoot) * countsPerInch);
-//        telemetry.addData("targetPositions","%i,%i,%i,%i",newFrontLeftTarget,newFrontLeftTarget,newRearRightTarget,newRearLeftTarget);
-//        telemetry.update();
-//
-//        frontRightDrive.setTargetPosition(newFrontRightTarget);
-//        frontLeftDrive.setTargetPosition(newFrontLeftTarget);
-//        rearRightDrive.setTargetPosition(newRearRightTarget);
-//        rearLeftDrive.setTargetPosition(newRearLeftTarget);
-//        telemetry.addData("target positions","inputted");
-//        telemetry.update();
-//
-//        frontRightDrive.setPower(Math.abs(speed));
-//        frontLeftDrive.setPower(Math.abs(speed));
-//        rearRightDrive.setPower(Math.abs(speed));
-//        rearLeftDrive.setPower(Math.abs(speed));
-//        telemetry.addData("Speed",speed);
-//        telemetry.update();
-//
-//        setAllMotorRunModesTo(DcMotor.RunMode.RUN_TO_POSITION);
-//        while (allMotorsAreBusy()){
-//            telemetry.addData("Moving","");
-//            telemetry.update();
-//        }
-//
-//        stopAllMotors();
-//    }
-
-    public void moveDegrees(int degrees,double speed){
-        double newFrontLeftTarget;
-        double newFrontRightTarget;
-        double newRearLeftTarget;
-        double newRearRightTarget;
-
-        setAllMotorZeroPowerBehaviorsTo(ZeroPowerBehavior.BRAKE);
-
-        newFrontLeftTarget = frontLeftDrive.getCurrentPosition() + (degrees * countsPerDegree);
-        newFrontRightTarget = frontLeftDrive.getCurrentPosition() + (-degrees * countsPerDegree);
-        newRearLeftTarget = frontLeftDrive.getCurrentPosition() + (degrees * countsPerDegree);
-        newRearRightTarget = frontLeftDrive.getCurrentPosition() + (-degrees * countsPerDegree);
-        telemetry.addData("targetPositions","%i,%i,%i,%i",newFrontLeftTarget,newFrontLeftTarget,newRearRightTarget,newRearLeftTarget);
-        telemetry.update();
-
-        frontRightDrive.setTargetPosition((int)newFrontRightTarget);
-        frontLeftDrive.setTargetPosition((int)newFrontLeftTarget);
-        rearRightDrive.setTargetPosition((int)newRearRightTarget);
-        rearLeftDrive.setTargetPosition((int)newRearLeftTarget);
-        telemetry.addData("target positions","inputted");
-        telemetry.update();
-
-        frontRightDrive.setPower(Math.abs(speed));
-        frontLeftDrive.setPower(Math.abs(speed));
-        rearRightDrive.setPower(Math.abs(speed));
-        rearLeftDrive.setPower(Math.abs(speed));
-        telemetry.addData("Speed",speed);
-        telemetry.update();
-
-        setAllMotorRunModesTo(DcMotor.RunMode.RUN_TO_POSITION);
-        while (allMotorsAreBusy()){
-            telemetry.addData("Moving","");
-            telemetry.update();
-        }
-
-        stopAllMotors();
-    }
 
     public void driveIMU(double GSPK, double distanceInches, double power){
 
@@ -575,64 +452,6 @@ public class MecanumDriveTrain {
 
     }
 
-    /*public void driveStraightWithDistanceControl(double targetDistance, double maxPower, double heading) {
-        // Reset encoders
-        setAllMotorRunModesTo(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        imu.resetYaw();
-
-        telemetry.addData("Yaw","Reset");
-        telemetry.update();
-
-        setAllMotorRunModesTo(DcMotor.RunMode.RUN_USING_ENCODER);
-
-
-        double minPower = 0.2;
-
-        double startPosition = frontLeftDrive.getCurrentPosition();
-        double distanceTraveled;
-        double distanceRemaining;
-        double sumOFErrors = 0;
-        double previousError = 0;
-
-        while (opMode.opModeIsActive()) {  // stop when close
-
-            // Update distance traveled
-            double currentPosition = frontLeftDrive.getCurrentPosition();
-            distanceTraveled = (currentPosition - startPosition) / countsPerInch;
-            distanceRemaining = targetDistance - distanceTraveled;
-            sumOFErrors = sumOFErrors + distanceRemaining;
-
-
-            double drivePower = Math.min(calculatePIDPower(distanceRemaining,sumOFErrors,previousError),maxPower);
-
-
-
-
-            // Use IMU to correct heading drift
-            double turnCorrection = getSteeringCorrection(heading, 0.05);
-
-            // Move the robot
-            moveRobot(drivePower, turnCorrection);
-
-            // Telemetry feedback
-            telemetry.addData("Target (in)", targetDistance);
-            telemetry.addData("Traveled (in)", distanceTraveled);
-            telemetry.addData("Remaining (in)", distanceRemaining);
-            telemetry.addData("Power", drivePower);
-            telemetry.update();
-
-            if(Math.abs(distanceRemaining)<0.25){
-                break;
-            }
-
-            previousError = distanceRemaining;
-        }
-
-        // Stop all motors
-        moveRobot(0, 0);
-    }*/
-
     public void driveStraightWithDistanceControl(double targetDistance, double maxPower, double heading) {
         targetDistance /= overshootPerInch ;
         setAllMotorRunModesTo(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -722,58 +541,7 @@ public class MecanumDriveTrain {
 
     }
 
-    public void brake(long holdTimeMs) {
-
-        // ROBOT SHOULD ALREADY BE IN BRAKE ZERO-POWER MODE
-        setAllMotorZeroPowerBehaviorsTo(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        // Read target hold positions (encoder ticks)
-        int flTarget = frontLeftDrive.getCurrentPosition();
-        int frTarget = frontRightDrive.getCurrentPosition();
-        int rlTarget = rearLeftDrive.getCurrentPosition();
-        int rrTarget = rearRightDrive.getCurrentPosition();
-
-        double KP = 0.01;       // proportional gain for holding
-        double maxHoldPower = 0.3;   // limit to protect motors
-
-        ElapsedTime timer = new ElapsedTime();
-
-        // Run lightweight PID loop
-        while (opMode.opModeIsActive() && timer.milliseconds() < holdTimeMs) {
-
-            // Compute position errors
-            double flError = flTarget - frontLeftDrive.getCurrentPosition();
-            double frError = frTarget - frontRightDrive.getCurrentPosition();
-            double rlError = rlTarget - rearLeftDrive.getCurrentPosition();
-            double rrError = rrTarget - rearRightDrive.getCurrentPosition();
-
-            // Compute hold power based on P only (I and D not needed)
-            double flPower = Range.clip(flError * KP, -maxHoldPower, maxHoldPower);
-            double frPower = Range.clip(frError * KP, -maxHoldPower, maxHoldPower);
-            double rlPower = Range.clip(rlError * KP, -maxHoldPower, maxHoldPower);
-            double rrPower = Range.clip(rrError * KP, -maxHoldPower, maxHoldPower);
-
-            // Apply holding power
-            frontLeftDrive.setPower(flPower);
-            frontRightDrive.setPower(frPower);
-            rearLeftDrive.setPower(rlPower);
-            rearRightDrive.setPower(rrPower);
-
-            telemetry.addData("Braking",holdTimeMs);
-            telemetry.update();
-
-            opMode.idle();
-        }
-
-        // Stop applying hold power after time expires
-        setAllMotorPowersTo(0);
-    }
-
-
-
     public double calculatePIDPower(double error, double sumOfAllPastErrors, double previousError){
-
-
         double proportionalCorrection = error * KP;
         double integralCorrection = sumOfAllPastErrors * KI ;
         double derivativeCorrection = (previousError-error) * KD;
@@ -783,11 +551,198 @@ public class MecanumDriveTrain {
 
     }
 
+    // commented out code
+
+    //    public void moveInchesWithCOC(double speed, double leftInches, double rightInches) {
+//
+//        int newFrontLeftTarget;
+//        int newFrontRightTarget;
+//        int newRearLeftTarget;
+//        int newRearRightTarget;
+//
+//        double constantOvershoot = 1.65;
+//
+//        setAllMotorZeroPowerBehaviorsTo(ZeroPowerBehavior.BRAKE);
+//
+//        newFrontLeftTarget = frontLeftDrive.getCurrentPosition() + (int) ((leftInches-constantOvershoot) * countsPerInch);
+//        newFrontRightTarget = frontRightDrive.getCurrentPosition() + (int) ((rightInches-constantOvershoot) * countsPerInch);
+//        newRearLeftTarget = rearLeftDrive.getCurrentPosition() + (int) ((leftInches - constantOvershoot) * countsPerInch);
+//        newRearRightTarget = rearRightDrive.getCurrentPosition() + (int) ((rightInches-constantOvershoot) * countsPerInch);
+//        telemetry.addData("targetPositions","%i,%i,%i,%i",newFrontLeftTarget,newFrontLeftTarget,newRearRightTarget,newRearLeftTarget);
+//        telemetry.update();
+//
+//        frontRightDrive.setTargetPosition(newFrontRightTarget);
+//        frontLeftDrive.setTargetPosition(newFrontLeftTarget);
+//        rearRightDrive.setTargetPosition(newRearRightTarget);
+//        rearLeftDrive.setTargetPosition(newRearLeftTarget);
+//        telemetry.addData("target positions","inputted");
+//        telemetry.update();
+//
+//        frontRightDrive.setPower(Math.abs(speed));
+//        frontLeftDrive.setPower(Math.abs(speed));
+//        rearRightDrive.setPower(Math.abs(speed));
+//        rearLeftDrive.setPower(Math.abs(speed));
+//        telemetry.addData("Speed",speed);
+//        telemetry.update();
+//
+//        setAllMotorRunModesTo(DcMotor.RunMode.RUN_TO_POSITION);
+//        while (allMotorsAreBusy()){
+//            telemetry.addData("Moving","");
+//            telemetry.update();
+//        }
+//
+//        stopAllMotors();
+//    }
+
+//    public void moveInchesWithCPOC(double speed, double leftInches, double rightInches) {
+//
+//        int newFrontLeftTarget;
+//        int newFrontRightTarget;
+//        int newRearLeftTarget;
+//        int newRearRightTarget;
+//
+//        double constantOvershoot = 0.5;
+//        double proportionalOvershootPerInch = 0.1;
+//        double correction = 1 - (1/(1 + proportionalOvershootPerInch));
+//
+//        setAllMotorZeroPowerBehaviorsTo(ZeroPowerBehavior.BRAKE);
+//
+//        newFrontLeftTarget = frontLeftDrive.getCurrentPosition() + (int) ((leftInches*correction-constantOvershoot) * countsPerInch);
+//        newFrontRightTarget = frontRightDrive.getCurrentPosition() + (int) ((rightInches*correction-constantOvershoot) * countsPerInch);
+//        newRearLeftTarget = rearLeftDrive.getCurrentPosition() + (int) ((leftInches*correction-constantOvershoot) * countsPerInch);
+//        newRearRightTarget = rearRightDrive.getCurrentPosition() + (int) ((rightInches-constantOvershoot) * countsPerInch);
+//        telemetry.addData("targetPositions","%i,%i,%i,%i",newFrontLeftTarget,newFrontLeftTarget,newRearRightTarget,newRearLeftTarget);
+//        telemetry.update();
+//
+//        frontRightDrive.setTargetPosition(newFrontRightTarget);
+//        frontLeftDrive.setTargetPosition(newFrontLeftTarget);
+//        rearRightDrive.setTargetPosition(newRearRightTarget);
+//        rearLeftDrive.setTargetPosition(newRearLeftTarget);
+//        telemetry.addData("target positions","inputted");
+//        telemetry.update();
+//
+//        frontRightDrive.setPower(Math.abs(speed));
+//        frontLeftDrive.setPower(Math.abs(speed));
+//        rearRightDrive.setPower(Math.abs(speed));
+//        rearLeftDrive.setPower(Math.abs(speed));
+//        telemetry.addData("Speed",speed);
+//        telemetry.update();
+//
+//        setAllMotorRunModesTo(DcMotor.RunMode.RUN_TO_POSITION);
+//        while (allMotorsAreBusy()){
+//            telemetry.addData("Moving","");
+//            telemetry.update();
+//        }
+//
+//        stopAllMotors();
+//    }
+
+     /*public void activelyResistChange(double milliseconds) {
+
+        // Hold current position
+        int frontLeftTarget = frontLeftDrive.getCurrentPosition();
+        int frontRightTarget = frontRightDrive.getCurrentPosition();
+        int rearRightTarget = rearRightDrive.getCurrentPosition();
+        int rearLeftTarget = rearLeftDrive.getCurrentPosition();
+
+        // Must be in RUN_TO_POSITION
+        frontLeftDrive.setTargetPosition(frontLeftTarget);
+        frontRightDrive.setTargetPosition(frontRightTarget);
+        rearLeftDrive.setTargetPosition(rearLeftTarget);
+        rearRightDrive.setTargetPosition(rearRightTarget);
+        setAllMotorRunModesTo(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        // Power needed to hold position
+        setAllMotorPowersTo(0.3);  // adjust if needed
+
+        ElapsedTime timer = new ElapsedTime();
+
+        while (timer.milliseconds() < milliseconds) {
+
+            int frontLeftDriveCurrentPosition = frontLeftDrive.getCurrentPosition();
+            int frontRightDriveCurrentPosition = frontRightDrive.getCurrentPosition();
+            int rearRightDriveCurrentPosition = rearRightDrive.getCurrentPosition();
+            int rearLeftDriveCurrentPosition = rearLeftDrive.getCurrentPosition();
+
+            double frontLeftError = frontLeftTarget - frontLeftDriveCurrentPosition;
+            double frontRightError = frontRightTarget - frontRightDriveCurrentPosition;
+            double rearLeftError = rearLeftTarget - rearLeftDriveCurrentPosition;
+            double rearRightError = rearRightTarget - rearRightDriveCurrentPosition;
+
+            // If pushed, command motor back to position
+            if (Math.abs(frontLeftError) > 5 && Math.abs(rearLeftError)>5 && Math.abs(frontRightError) > 5 && Math.abs(rearRightError) > 5) {   // deadband of 5 ticks
+                frontLeftDrive.setTargetPosition(frontLeftTarget);
+                frontRightDrive.setTargetPosition(frontRightTarget);
+                rearLeftDrive.setTargetPosition(rearLeftTarget);
+                rearRightDrive.setTargetPosition(rearRightTarget);
+                opMode.idle();
+            }
+
+        }
+
+        // Stop holding
+        setAllMotorPowersTo(0);
+        setAllMotorRunModesTo(DcMotor.RunMode.RUN_USING_ENCODER);
+    }*/
+
+     /*public void driveStraightWithDistanceControl(double targetDistance, double maxPower, double heading) {
+        // Reset encoders
+        setAllMotorRunModesTo(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        imu.resetYaw();
+
+        telemetry.addData("Yaw","Reset");
+        telemetry.update();
+
+        setAllMotorRunModesTo(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+        double minPower = 0.2;
+
+        double startPosition = frontLeftDrive.getCurrentPosition();
+        double distanceTraveled;
+        double distanceRemaining;
+        double sumOFErrors = 0;
+        double previousError = 0;
+
+        while (opMode.opModeIsActive()) {  // stop when close
+
+            // Update distance traveled
+            double currentPosition = frontLeftDrive.getCurrentPosition();
+            distanceTraveled = (currentPosition - startPosition) / countsPerInch;
+            distanceRemaining = targetDistance - distanceTraveled;
+            sumOFErrors = sumOFErrors + distanceRemaining;
+
+
+            double drivePower = Math.min(calculatePIDPower(distanceRemaining,sumOFErrors,previousError),maxPower);
 
 
 
 
+            // Use IMU to correct heading drift
+            double turnCorrection = getSteeringCorrection(heading, 0.05);
 
+            // Move the robot
+            moveRobot(drivePower, turnCorrection);
+
+            // Telemetry feedback
+            telemetry.addData("Target (in)", targetDistance);
+            telemetry.addData("Traveled (in)", distanceTraveled);
+            telemetry.addData("Remaining (in)", distanceRemaining);
+            telemetry.addData("Power", drivePower);
+            telemetry.update();
+
+            if(Math.abs(distanceRemaining)<0.25){
+                break;
+            }
+
+            previousError = distanceRemaining;
+        }
+
+        // Stop all motors
+        moveRobot(0, 0);
+    }*/
 
     /*public void driveWithIMUStraight(double GSPK, double Seconds, double power,double TargetAngle){
 
@@ -824,5 +779,44 @@ public class MecanumDriveTrain {
         }
 
     }*/
+
+    /*
+    public void moveDegrees(int degrees,double speed){
+        double newFrontLeftTarget;
+        double newFrontRightTarget;
+        double newRearLeftTarget;
+        double newRearRightTarget;
+
+        setAllMotorZeroPowerBehaviorsTo(ZeroPowerBehavior.BRAKE);
+
+        newFrontLeftTarget = frontLeftDrive.getCurrentPosition() + (degrees * countsPerDegree);
+        newFrontRightTarget = frontLeftDrive.getCurrentPosition() + (-degrees * countsPerDegree);
+        newRearLeftTarget = frontLeftDrive.getCurrentPosition() + (degrees * countsPerDegree);
+        newRearRightTarget = frontLeftDrive.getCurrentPosition() + (-degrees * countsPerDegree);
+        telemetry.addData("targetPositions","%i,%i,%i,%i",newFrontLeftTarget,newFrontLeftTarget,newRearRightTarget,newRearLeftTarget);
+        telemetry.update();
+
+        frontRightDrive.setTargetPosition((int)newFrontRightTarget);
+        frontLeftDrive.setTargetPosition((int)newFrontLeftTarget);
+        rearRightDrive.setTargetPosition((int)newRearRightTarget);
+        rearLeftDrive.setTargetPosition((int)newRearLeftTarget);
+        telemetry.addData("target positions","inputted");
+        telemetry.update();
+
+        frontRightDrive.setPower(Math.abs(speed));
+        frontLeftDrive.setPower(Math.abs(speed));
+        rearRightDrive.setPower(Math.abs(speed));
+        rearLeftDrive.setPower(Math.abs(speed));
+        telemetry.addData("Speed",speed);
+        telemetry.update();
+
+        setAllMotorRunModesTo(DcMotor.RunMode.RUN_TO_POSITION);
+        while (allMotorsAreBusy()){
+            telemetry.addData("Moving","");
+            telemetry.update();
+        }
+
+        stopAllMotors();
+    } */
 
 }
