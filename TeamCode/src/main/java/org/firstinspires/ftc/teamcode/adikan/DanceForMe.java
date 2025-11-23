@@ -61,21 +61,10 @@ public class DanceForMe extends LinearOpMode {
     }
 
     private void move(double axial, double lateral, double yaw) {
-
-
             frontLeftDrive.setPower(axial+lateral+yaw);
             frontRightDrive.setPower(axial-lateral-yaw);
             rearLeftDrive.setPower(axial-lateral+yaw);
             rearRightDrive.setPower(axial+lateral-yaw);
-
-
-
-
-
-
-        //telemetry.addData();
-        //telemetry.update();
-
     }
 
 
