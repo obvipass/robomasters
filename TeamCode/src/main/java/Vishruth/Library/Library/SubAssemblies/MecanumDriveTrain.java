@@ -178,6 +178,25 @@ public class MecanumDriveTrain {
         setAllMotorPowersTo(0);
     }
     //movement
+
+    public void moveFieldRelative(double axial, double lateral, double yaw){
+        // convert axial and lateral into angle or direction of vector and magnitude or size of vector
+
+        double magnitudeOfVector = Math.hypot(axial, lateral);
+        double angle  = Math.atan2(axial, lateral);
+
+        // account for the direction of robot
+        angle = AngleUnit.normalizeRadians(angle - imu.getHeading(AngleUnit.RADIANS));
+
+        //braking down angle and magnitude back into axial and lateral values
+        double axialNew = magnitudeOfVector * Math.sin(angle);
+        double lateralNew = magnitudeOfVector * Math.cos(angle);
+
+        moveWithALY(axialNew,lateralNew,yaw);
+
+
+    }
+
     public void moveWithALY(double axial, double lateral, double yaw){
 
         /* double frontLeftPower  = axial + lateral + yaw
