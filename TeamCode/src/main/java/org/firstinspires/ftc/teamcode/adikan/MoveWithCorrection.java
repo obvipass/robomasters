@@ -66,8 +66,6 @@ public class MoveWithCorrection extends LinearOpMode {
         rearLeftDrive.setTargetPosition(newRearLeftPosition);
         rearRightDrive.setTargetPosition(newRearRightPosition);
 
-        telemetry.addData("middle of moving", "");
-        telemetry.update();
 
         frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
