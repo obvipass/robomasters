@@ -41,7 +41,7 @@ public class MoveWithCorrection extends LinearOpMode {
 
         waitForStart();
         moveLinearly(48, 48, 0.2);
-        //rotate(90,0.2);
+        rotate(90,0.1);
 
     }
 
@@ -175,6 +175,80 @@ public class MoveWithCorrection extends LinearOpMode {
         telemetry.addData("Moved to ", "%7d %7d %7d %7d", newFrontLeftPosition, newFrontRightPosition, newRearLeftPosition, newRearRightPosition);
         telemetry.update();
     }
+    private void move(int dist, boolean axial, double power) {
 
+        telemetry.addData("Starting to Move Linearly", "");
+        telemetry.update();
+
+        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rearLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rearRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        int reqCounts = (int) (dist * COUNTS_PER_INCH);
+        int newFrontRightPosition;
+        int newRearLeftPosition;
+
+        int newFrontLeftPosition = frontLeftDrive.getCurrentPosition() + reqCounts;
+        int newRearRightPosition = rearLeftDrive.getCurrentPosition() + reqCounts;
+        if (axial) {
+            newFrontRightPosition = frontRightDrive.getCurrentPosition() + reqCounts;
+            newRearLeftPosition = rearLeftDrive.getCurrentPosition() + reqCounts;
+        } else {
+            newFrontRightPosition = frontRightDrive.getCurrentPosition() - reqCounts;
+            newRearLeftPosition = rearLeftDrive.getCurrentPosition() - reqCounts;
+        }
+
+        frontLeftDrive.setTargetPosition(newFrontLeftPosition);
+        frontRightDrive.setTargetPosition(newFrontRightPosition);
+        rearLeftDrive.setTargetPosition(newRearLeftPosition);
+        rearRightDrive.setTargetPosition(newRearRightPosition);
+
+        telemetry.addData("Calculated new positions to be - ", "%7d %7d %7d %7d", newFrontLeftPosition, newFrontRightPosition, newRearLeftPosition, newRearRightPosition);
+        telemetry.update();
+
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rearLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rearRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        frontLeftDrive.setPower(power);
+        frontRightDrive.setPower(power);
+        rearLeftDrive.setPower(power);
+        rearRightDrive.setPower(power);
+
+        while (opModeIsActive() && frontLeftDrive.isBusy() && frontRightDrive.isBusy() && rearLeftDrive.isBusy() && rearRightDrive.isBusy()) {
+            int targetYaw = 0;
+            double currentYaw = imu.getRobotYawPitchRollAngles().getYaw();
+            double error = targetYaw - currentYaw;
+            if (dist < 0) {
+                error *= -1;
+            }
+            double errorGain = 0.01 * error; // Apply correction gradually
+
+            double leftPower = power - errorGain;
+            double rightPower = power + errorGain;
+            double max = Math.max(leftPower, rightPower);
+            if (max > 1.0) {
+                leftPower /= max;
+                rightPower /= max;
+            }
+
+            frontLeftDrive.setPower(leftPower);
+            rearLeftDrive.setPower(leftPower);
+            frontRightDrive.setPower(rightPower);
+            rearRightDrive.setPower(rightPower);
+
+
+        }
+        frontLeftDrive.setPower(0);
+        frontRightDrive.setPower(0);
+        rearLeftDrive.setPower(0);
+        rearRightDrive.setPower(0);
+
+        telemetry.addData("Finished Moving Linearly", "");
+        telemetry.update();
+
+    }
 }
 

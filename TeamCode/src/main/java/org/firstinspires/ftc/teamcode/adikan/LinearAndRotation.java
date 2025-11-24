@@ -39,13 +39,16 @@ public class LinearAndRotation extends LinearOpMode {
 
         waitForStart();
 
-        moveLinearly(84,84, 0.5);
-       /* rotate(90, 0.5);
-        moveLinearly(60,60, 0.5);
+        moveLinearly(48,48, 0.5);
+        rotate(30, 0.2);
+        moveLinearly(36,36, 0.5);
+        /*
         rotate(90,0.5);
         moveLinearly(84,84,0.5);
         rotate(90,0.5);
-        moveLinearly(60,60,0.5);*/
+        moveLinearly(60,60,0.5)
+
+         */
 
        // sleep(1000);
         // move(-5,-5,0.2);
@@ -148,6 +151,7 @@ public class LinearAndRotation extends LinearOpMode {
 
         telemetry.addData("Finished Moving Linearly", "");
         telemetry.update();
-
     }
+
+
 }
