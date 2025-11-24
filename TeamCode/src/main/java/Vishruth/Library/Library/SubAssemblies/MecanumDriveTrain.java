@@ -20,7 +20,7 @@ public class MecanumDriveTrain {
     final double pulsesPerRevolution = 537.7;
     final double wheelDiameterInches = 4;
     final double countsPerInch = pulsesPerRevolution / (wheelDiameterInches * Math.PI);
-    final double countsPerDegree  = 11.06;
+    final double countsPerDegree = 11.06;
     double GSPK = 0.1;
     final double overshootPerInch = 1.036458333333333333;
 
@@ -33,7 +33,7 @@ public class MecanumDriveTrain {
 
     HardwareMap mecanumMap;
 
-    Imu imu = new Imu();
+    public Imu imu = new Imu();
 
     public Motor frontLeftDrive;
     public Motor frontRightDrive;
@@ -46,7 +46,7 @@ public class MecanumDriveTrain {
         this.opMode = opMode;
 
         this.telemetry = opMode.telemetry;
-        this.telemetry.addData("Constructor","Ready");
+        this.telemetry.addData("Constructor", "Ready");
         this.telemetry.update();
 
         initDriveTrain();
@@ -71,7 +71,7 @@ public class MecanumDriveTrain {
         telemetry.update();
         imu.initIMU(mecanumMap);
 
-        telemetry.addData("MotorPower","Ready");
+        telemetry.addData("MotorPower", "Ready");
         telemetry.update();
 
 
@@ -83,28 +83,28 @@ public class MecanumDriveTrain {
         double headingError = desiredHeading - imu.getHeading(AngleUnit.DEGREES);
 
         // Normalize the error to be within +/- 180 degrees
-        while (headingError > 180)  headingError -= 360;
+        while (headingError > 180) headingError -= 360;
         while (headingError <= -180) headingError += 360;
 
         // Multiply the error by the gain to determine the required steering correction/  Limit the result to +/- 1.0
         return Range.clip(headingError * proportionalGain, -1, 1);
     }
 
-    public boolean allMotorsAreBusy(){
+    public boolean allMotorsAreBusy() {
         return frontRightDrive.isBusy() && frontLeftDrive.isBusy() && rearLeftDrive.isBusy() && rearRightDrive.isBusy();
     }
 
     //all motor methods
-    public void stopAllMotors(){
+    public void stopAllMotors() {
         frontLeftDrive.setPower(0);
         frontRightDrive.setPower(0);
         rearRightDrive.setPower(0);
         rearLeftDrive.setPower(0);
-        telemetry.addData("Motors","Stopped");
+        telemetry.addData("Motors", "Stopped");
         telemetry.update();
     }
 
-    public void setAllMotorRunModesTo(DcMotor.RunMode r){
+    public void setAllMotorRunModesTo(DcMotor.RunMode r) {
         frontLeftDrive.setMode(r);
         frontRightDrive.setMode(r);
         rearLeftDrive.setMode(r);
@@ -118,16 +118,16 @@ public class MecanumDriveTrain {
         frontRightDrive.setZeroPowerBehavior(z);
         rearLeftDrive.setZeroPowerBehavior(z);
         rearRightDrive.setZeroPowerBehavior(z);
-        telemetry.addData("Motors ZeroPowerBehaviorSetTo", z );
+        telemetry.addData("Motors ZeroPowerBehaviorSetTo", z);
         telemetry.update();
     }
 
-    public void setAllMotorPowersTo(double power){
+    public void setAllMotorPowersTo(double power) {
         frontLeftDrive.setPower(power);
         frontRightDrive.setPower(power);
         rearRightDrive.setPower(power);
         rearLeftDrive.setPower(power);
-        telemetry.addData("Power",power);
+        telemetry.addData("Power", power);
         telemetry.update();
     }
 
@@ -168,7 +168,7 @@ public class MecanumDriveTrain {
             rearLeftDrive.setPower(rlPower);
             rearRightDrive.setPower(rrPower);
 
-            telemetry.addData("Braking",holdTimeMs);
+            telemetry.addData("Braking", holdTimeMs);
             telemetry.update();
 
             opMode.idle();
@@ -179,25 +179,25 @@ public class MecanumDriveTrain {
     }
     //movement
 
-    public void moveFieldRelative(double axial, double lateral, double yaw){
+    public void moveFieldRelative(double axial, double lateral, double yaw) {
         // convert axial and lateral into angle or direction of vector and magnitude or size of vector
 
         double magnitudeOfVector = Math.hypot(axial, lateral);
-        double angle  = Math.atan2(axial, lateral);
+        double angle = Math.atan2(axial, lateral);
 
-        // account for the direction of robot
+        // account for the direction of robot, add if right is positive
         angle = AngleUnit.normalizeRadians(angle - imu.getHeading(AngleUnit.RADIANS));
 
         //braking down angle and magnitude back into axial and lateral values
         double axialNew = magnitudeOfVector * Math.sin(angle);
         double lateralNew = magnitudeOfVector * Math.cos(angle);
 
-        moveWithALY(axialNew,lateralNew,yaw);
+        moveWithALY(axialNew, lateralNew, yaw);
 
 
     }
 
-    public void moveWithALY(double axial, double lateral, double yaw){
+    public void moveWithALY(double axial, double lateral, double yaw) {
 
         /* double frontLeftPower  = axial + lateral + yaw
         double frontRightPower = axial - lateral - yaw
@@ -205,11 +205,11 @@ public class MecanumDriveTrain {
         double backRightPower  = axial + lateral - yaw */
 
         setAllMotorZeroPowerBehaviorsTo(ZeroPowerBehavior.BRAKE);
-        telemetry.addData("Axial",axial);
+        telemetry.addData("Axial", axial);
         telemetry.addLine();
-        telemetry.addData("Lateral",lateral);
+        telemetry.addData("Lateral", lateral);
         telemetry.addLine();
-        telemetry.addData("Yaw",yaw);
+        telemetry.addData("Yaw", yaw);
         telemetry.update();
 
         frontLeftDrive.setPower(axial + lateral + yaw);
@@ -232,26 +232,26 @@ public class MecanumDriveTrain {
         newFrontRightTarget = frontRightDrive.getCurrentPosition() + (int) (rightInches * countsPerInch);
         newRearLeftTarget = rearLeftDrive.getCurrentPosition() + (int) (leftInches * countsPerInch);
         newRearRightTarget = rearRightDrive.getCurrentPosition() + (int) (rightInches * countsPerInch);
-        telemetry.addData("targetPositions","%i,%i,%i,%i",newFrontLeftTarget,newFrontLeftTarget,newRearRightTarget,newRearLeftTarget);
+        telemetry.addData("targetPositions", "%i,%i,%i,%i", newFrontLeftTarget, newFrontLeftTarget, newRearRightTarget, newRearLeftTarget);
         telemetry.update();
 
         frontRightDrive.setTargetPosition(newFrontRightTarget);
         frontLeftDrive.setTargetPosition(newFrontLeftTarget);
         rearRightDrive.setTargetPosition(newRearRightTarget);
         rearLeftDrive.setTargetPosition(newRearLeftTarget);
-        telemetry.addData("target positions","inputted");
+        telemetry.addData("target positions", "inputted");
         telemetry.update();
 
         frontRightDrive.setPower(Math.abs(speed));
         frontLeftDrive.setPower(Math.abs(speed));
         rearRightDrive.setPower(Math.abs(speed));
         rearLeftDrive.setPower(Math.abs(speed));
-        telemetry.addData("Speed",speed);
+        telemetry.addData("Speed", speed);
         telemetry.update();
 
         setAllMotorRunModesTo(DcMotor.RunMode.RUN_TO_POSITION);
-        while (allMotorsAreBusy()){
-            telemetry.addData("Moving","");
+        while (allMotorsAreBusy()) {
+            telemetry.addData("Moving", "");
             telemetry.update();
         }
 
@@ -259,8 +259,7 @@ public class MecanumDriveTrain {
     }
 
 
-
-    public void driveIMU(double GSPK, double distanceInches, double power){
+    public void driveIMU(double GSPK, double distanceInches, double power) {
 
         int moveCounts = (int) (distanceInches * countsPerInch);
         imu.resetYaw();
@@ -290,7 +289,7 @@ public class MecanumDriveTrain {
         frontRightDrive.setPower(power);
         rearRightDrive.setPower(power);
 
-         // Proportional gain (tune this!)
+        // Proportional gain (tune this!)
 
         while (allMotorsAreBusy()) {
 
@@ -311,9 +310,9 @@ public class MecanumDriveTrain {
             rearLeftDrive.setPower(leftPower);
             frontRightDrive.setPower(rightPower);
             rearRightDrive.setPower(rightPower);
-    }
+        }
 
-}
+    }
 
     public void turnToAngle(double maxTurnSpeed, double heading, double proportional) {
 
@@ -347,41 +346,41 @@ public class MecanumDriveTrain {
         // Ensure that the OpMode is still active
 
 
-            // Determine new target position, and pass to motor controller
-            int moveCounts = (int)(distance * countsPerInch);
-            int frontLeftDriveTarget = frontLeftDrive.getCurrentPosition() + moveCounts;
-            int rearLeftDriveTarget = rearLeftDrive.getCurrentPosition() + moveCounts;
-            int frontRightDriveTarget = frontRightDrive.getCurrentPosition() + moveCounts;
-            int rearRightDriveTarget = rearRightDrive.getCurrentPosition() + moveCounts;
+        // Determine new target position, and pass to motor controller
+        int moveCounts = (int) (distance * countsPerInch);
+        int frontLeftDriveTarget = frontLeftDrive.getCurrentPosition() + moveCounts;
+        int rearLeftDriveTarget = rearLeftDrive.getCurrentPosition() + moveCounts;
+        int frontRightDriveTarget = frontRightDrive.getCurrentPosition() + moveCounts;
+        int rearRightDriveTarget = rearRightDrive.getCurrentPosition() + moveCounts;
 
-            // Set Target FIRST, then turn on RUN_TO_POSITION
-            frontLeftDrive.setTargetPosition(frontLeftDriveTarget);
-            rearLeftDrive.setTargetPosition(rearLeftDriveTarget);
-            frontRightDrive.setTargetPosition(frontRightDriveTarget);
-            rearRightDrive.setTargetPosition(rearRightDriveTarget);
+        // Set Target FIRST, then turn on RUN_TO_POSITION
+        frontLeftDrive.setTargetPosition(frontLeftDriveTarget);
+        rearLeftDrive.setTargetPosition(rearLeftDriveTarget);
+        frontRightDrive.setTargetPosition(frontRightDriveTarget);
+        rearRightDrive.setTargetPosition(rearRightDriveTarget);
 
-            setAllMotorRunModesTo(DcMotor.RunMode.RUN_TO_POSITION);
+        setAllMotorRunModesTo(DcMotor.RunMode.RUN_TO_POSITION);
 
-            // Set the required driving speed  (must be positive for RUN_TO_POSITION)
-            // Start driving straight, and then enter the control loop
-            moveRobot(driveSpeed, 0);
-            double turnSpeed;
-            double distanceRemaining;
-            // keep looping while we are still active, and BOTH motors are running.
-            while (allMotorsAreBusy() && opMode.opModeIsActive()) {
+        // Set the required driving speed  (must be positive for RUN_TO_POSITION)
+        // Start driving straight, and then enter the control loop
+        moveRobot(driveSpeed, 0);
+        double turnSpeed;
+        double distanceRemaining;
+        // keep looping while we are still active, and BOTH motors are running.
+        while (allMotorsAreBusy() && opMode.opModeIsActive()) {
 
-                // Determine required steering to keep on heading
-                turnSpeed = getSteeringCorrection(heading, GSPK);
+            // Determine required steering to keep on heading
+            turnSpeed = getSteeringCorrection(heading, GSPK);
 
 
-                // if driving in reverse, the motor correction also needs to be reversed
-                if (distance < 0)
-                    turnSpeed *= -1.0;
+            // if driving in reverse, the motor correction also needs to be reversed
+            if (distance < 0)
+                turnSpeed *= -1.0;
 
-                // Apply the turning correction to the current driving speed.
-                moveRobot(driveSpeed, turnSpeed);
+            // Apply the turning correction to the current driving speed.
+            moveRobot(driveSpeed, turnSpeed);
 
-                // Display drive status for the driver.
+            // Display drive status for the driver.
 
 
             // Stop all motion & Turn off RUN_TO_POSITION
@@ -392,13 +391,12 @@ public class MecanumDriveTrain {
 
     public void moveRobot(double drive, double turn) {
 
-        double leftSpeed  = drive - turn;
+        double leftSpeed = drive - turn;
         double rightSpeed = drive + turn;
 
         // Scale speeds down if either one exceeds +/- 1.0;
         double max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
-        if (max > 1.0)
-        {
+        if (max > 1.0) {
             leftSpeed /= max;
             rightSpeed /= max;
         }
@@ -461,9 +459,9 @@ public class MecanumDriveTrain {
         stopAllMotors();
     }
 
-    public void induceError(Motor motor, double power, double timeInMilliseconds){
+    public void induceError(Motor motor, double power, double timeInMilliseconds) {
         ElapsedTime time = new ElapsedTime();
-        while (time.milliseconds() < timeInMilliseconds){
+        while (time.milliseconds() < timeInMilliseconds) {
             motor.setPower(power);
         }
         setAllMotorPowersTo(0);
@@ -472,13 +470,13 @@ public class MecanumDriveTrain {
     }
 
     public void driveStraightWithDistanceControl(double targetDistance, double maxPower, double heading) {
-        targetDistance /= overshootPerInch ;
+        targetDistance /= overshootPerInch;
         setAllMotorRunModesTo(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setAllMotorZeroPowerBehaviorsTo(ZeroPowerBehavior.BRAKE);
         imu.resetYaw();
         setAllMotorRunModesTo(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        telemetry.addData("Motors","Ready");
+        telemetry.addData("Motors", "Ready");
         telemetry.update();
 
         double newFrontLeftTarget = frontLeftDrive.getCurrentPosition() + (int) (targetDistance * countsPerInch);
@@ -486,7 +484,7 @@ public class MecanumDriveTrain {
         double newRearLeftTarget = rearLeftDrive.getCurrentPosition() + (int) (targetDistance * countsPerInch);
         double newRearRightTarget = rearRightDrive.getCurrentPosition() + (int) (targetDistance * countsPerInch);
 
-        telemetry.addData("targetPositions","%i,%i,%i,%i",newFrontLeftTarget,newFrontLeftTarget,newRearRightTarget,newRearLeftTarget);
+        telemetry.addData("targetPositions", "%i,%i,%i,%i", newFrontLeftTarget, newFrontLeftTarget, newRearRightTarget, newRearLeftTarget);
         telemetry.update();
 
         frontRightDrive.setTargetPosition((int) newFrontRightTarget);
@@ -494,7 +492,7 @@ public class MecanumDriveTrain {
         rearRightDrive.setTargetPosition((int) newRearRightTarget);
         rearLeftDrive.setTargetPosition((int) newRearLeftTarget);
 
-        telemetry.addData("TargetPos","Inputted");
+        telemetry.addData("TargetPos", "Inputted");
         telemetry.update();
 
         setAllMotorRunModesTo(DcMotor.RunMode.RUN_TO_POSITION);
@@ -527,13 +525,13 @@ public class MecanumDriveTrain {
             // Clip power
             drivePower = Range.clip(drivePower, minPower, maxPower);
 
-            telemetry.addData("DrivePower",drivePower);
+            telemetry.addData("DrivePower", drivePower);
             telemetry.update();
 
             // Heading correction
             double turnCorrection = getSteeringCorrection(heading, 0.05);
 
-            telemetry.addData("TurnPower",turnCorrection);
+            telemetry.addData("TurnPower", turnCorrection);
             telemetry.update();
 
             // Move robot
@@ -547,11 +545,11 @@ public class MecanumDriveTrain {
 
             previousError = error;
         }
-            brake(1000);
-            setAllMotorPowersTo(0);
-            setAllMotorRunModesTo(DcMotor.RunMode.RUN_USING_ENCODER);
-            opMode.sleep(1000);
-            opMode.idle();
+        brake(1000);
+        setAllMotorPowersTo(0);
+        setAllMotorRunModesTo(DcMotor.RunMode.RUN_USING_ENCODER);
+        opMode.sleep(1000);
+        opMode.idle();
 
         moveRobot(0, 0);
     }
@@ -560,12 +558,12 @@ public class MecanumDriveTrain {
 
     }
 
-    public double calculatePIDPower(double error, double sumOfAllPastErrors, double previousError){
+    public double calculatePIDPower(double error, double sumOfAllPastErrors, double previousError) {
         double proportionalCorrection = error * KP;
-        double integralCorrection = sumOfAllPastErrors * KI ;
-        double derivativeCorrection = (previousError-error) * KD;
+        double integralCorrection = sumOfAllPastErrors * KI;
+        double derivativeCorrection = (previousError - error) * KD;
 
-        return proportionalCorrection + Range.clip(integralCorrection,-0.5,0.5)+ derivativeCorrection;
+        return proportionalCorrection + Range.clip(integralCorrection, -0.5, 0.5) + derivativeCorrection;
 
 
     }
