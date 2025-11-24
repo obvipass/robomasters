@@ -127,6 +127,9 @@ public class MoveWithCorrection extends LinearOpMode {
         int newRearLeftPosition = rearLeftDrive.getCurrentPosition() + (int) (degrees * COUNTS_PER_DEGREE);
         int newRearRightPosition = rearLeftDrive.getCurrentPosition() + (int) (-degrees * COUNTS_PER_DEGREE);
 
+        telemetry.addData("Calculated new positions to be - ", "%7d %7d %7d %7d", newFrontLeftPosition, newFrontRightPosition, newRearLeftPosition, newRearRightPosition);
+        telemetry.update();
+
 
         frontLeftDrive.setTargetPosition(newFrontLeftPosition);
         frontRightDrive.setTargetPosition(newFrontRightPosition);
