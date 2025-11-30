@@ -24,9 +24,9 @@ public class MecanumDriveTrain {
     final double pulsesPerRevolution = 537.7;
     final double wheelDiameterInches = 4;
     final double countsPerInch = pulsesPerRevolution / (wheelDiameterInches * Math.PI);
-    double countsPerDegree = 11.06;
+    double countsPerDegree;
     double GSPK = 0.1;
-    double overshootPerInch = 1.036458333333333333;
+    double overshootPerInch;
 
     double KP = 0.1;
     double KI = 0.1;

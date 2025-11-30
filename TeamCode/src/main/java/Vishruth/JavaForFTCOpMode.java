@@ -13,8 +13,8 @@ public class JavaForFTCOpMode extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()){
-            chapter3Exercises();
-            chaper4exercises();
+            chapter4exercises();
+
         }
 
     }
@@ -28,7 +28,7 @@ public class JavaForFTCOpMode extends LinearOpMode {
         telemetry.update();
     }
 
-    public void chaper4exercises(){
+    public void chapter4exercises(){
         if(gamepad1.a){
         telemetry.addData("Turbo","Active");
         telemetry.addData("Forward Speed",gamepad1.left_stick_y);
