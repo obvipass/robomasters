@@ -44,6 +44,30 @@ public class MecanumDriveTrain {
     public Motor rearLeftDrive;
     public Motor rearRightDrive;
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("MecanumDriveTrain{");
+        sb.append("pulsesPerRevolution=").append(pulsesPerRevolution);
+        sb.append(", wheelDiameterInches=").append(wheelDiameterInches);
+        sb.append(", countsPerInch=").append(countsPerInch);
+        sb.append(", countsPerDegree=").append(countsPerDegree);
+        sb.append(", GSPK=").append(GSPK);
+        sb.append(", overshootPerInch=").append(overshootPerInch);
+        sb.append(", KP=").append(KP);
+        sb.append(", KI=").append(KI);
+        sb.append(", KD=").append(KD);
+        sb.append(", telemetry=").append(telemetry);
+        sb.append(", opMode=").append(opMode);
+        sb.append(", mecanumMap=").append(mecanumMap);
+        sb.append(", imu=").append(imu);
+        sb.append(", frontLeftDrive=").append(frontLeftDrive);
+        sb.append(", frontRightDrive=").append(frontRightDrive);
+        sb.append(", rearLeftDrive=").append(rearLeftDrive);
+        sb.append(", rearRightDrive=").append(rearRightDrive);
+        sb.append('}');
+        return sb.toString();
+    }
+
     //initializations
     public MecanumDriveTrain(@NonNull LinearOpMode opMode, DriveTrainName driveTrainName) {
         this.mecanumMap = opMode.hardwareMap;
