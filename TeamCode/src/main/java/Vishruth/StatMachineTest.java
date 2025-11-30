@@ -10,6 +10,6 @@ public class StatMachineTest extends LinearOpMode {
     MecanumDriveTrain mecanumDriveTrain;
     @Override
     public void runOpMode(){
-        mecanumDriveTrain = new MecanumDriveTrain(this);
+        mecanumDriveTrain = new MecanumDriveTrain(this, MecanumDriveTrain.DriveTrainName.KEVIN);
     }
 }

@@ -10,7 +10,7 @@ public class OvershootCorrection extends LinearOpMode {
     MecanumDriveTrain mecanumDriveTrain;
     @Override
     public void runOpMode() {
-        mecanumDriveTrain = new MecanumDriveTrain(this);
+        mecanumDriveTrain = new MecanumDriveTrain(this, MecanumDriveTrain.DriveTrainName.KEVIN);
         waitForStart();
         mecanumDriveTrain.driveStraightWithDistanceControl(60,0.2,0);
 }

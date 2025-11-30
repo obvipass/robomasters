@@ -16,7 +16,7 @@ public class MovingandTurning extends LinearOpMode {
     MecanumDriveTrain mecanumDriveTrain;
 
     public void runOpMode(){
-        mecanumDriveTrain = new MecanumDriveTrain(this);
+        mecanumDriveTrain = new MecanumDriveTrain(this, MecanumDriveTrain.DriveTrainName.KEVIN);
         mecanumDriveTrain.initDriveTrain();
 
         waitForStart();

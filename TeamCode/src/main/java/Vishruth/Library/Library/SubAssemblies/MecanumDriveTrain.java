@@ -1,7 +1,6 @@
 package Vishruth.Library.Library.SubAssemblies;
 
 import androidx.annotation.NonNull;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
@@ -17,12 +16,17 @@ import Vishruth.Library.Library.Hardware.Motor;
 
 public class MecanumDriveTrain {
 
+    public enum DriveTrainName {
+        KEVIN,
+        BOB
+    }
+
     final double pulsesPerRevolution = 537.7;
     final double wheelDiameterInches = 4;
     final double countsPerInch = pulsesPerRevolution / (wheelDiameterInches * Math.PI);
-    final double countsPerDegree = 11.06;
+    double countsPerDegree = 11.06;
     double GSPK = 0.1;
-    final double overshootPerInch = 1.036458333333333333;
+    double overshootPerInch = 1.036458333333333333;
 
     double KP = 0.1;
     double KI = 0.1;
@@ -41,13 +45,25 @@ public class MecanumDriveTrain {
     public Motor rearRightDrive;
 
     //initializations
-    public MecanumDriveTrain(@NonNull LinearOpMode opMode) {
+    public MecanumDriveTrain(@NonNull LinearOpMode opMode, DriveTrainName driveTrainName) {
         this.mecanumMap = opMode.hardwareMap;
         this.opMode = opMode;
 
         this.telemetry = opMode.telemetry;
         this.telemetry.addData("Constructor", "Ready");
         this.telemetry.update();
+
+        switch (driveTrainName){
+            case KEVIN:
+                overshootPerInch = 1.036458333333333333;
+                countsPerDegree = 11.06;
+                break;
+            case BOB:
+                countsPerDegree = 11.06;
+                overshootPerInch = 1.036458333333333333;
+                break;
+        }
+
 
         initDriveTrain();
     }
@@ -797,7 +813,7 @@ public class MecanumDriveTrain {
 
     }*/
 
-    /*
+
     public void moveDegrees(int degrees,double speed){
         double newFrontLeftTarget;
         double newFrontRightTarget;
@@ -834,6 +850,6 @@ public class MecanumDriveTrain {
         }
 
         stopAllMotors();
-    } */
+    }
 
 }
