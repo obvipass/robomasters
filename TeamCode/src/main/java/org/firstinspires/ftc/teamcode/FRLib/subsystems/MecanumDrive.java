@@ -30,6 +30,9 @@ public class MecanumDrive {
     public final PIDController turnPid;
     public final PIDController drivePid;
 
+    // imu
+    private final IMUW imu;
+
     // Encoder and wheel constants
     private static final float COUNTS_PER_REV = 537.7f;
     private static final float GEAR_RATIO = 1.0f;
@@ -55,9 +58,10 @@ public class MecanumDrive {
     Init/Constructor
     */
 
-    public MecanumDrive(LinearOpMode opMode, Logger logger, RobotName robotName) {
+    public MecanumDrive(LinearOpMode opMode, Logger logger, RobotName robotName, IMUW imu) {
         this.opMode = opMode;
         this.logger = logger;
+        this.imu = imu;
 
         switch (robotName) {
             case KEVIN:
@@ -172,6 +176,14 @@ public class MecanumDrive {
         stop();
     }
 
+    public boolean isAnyMotorBusy() {
+        for (MotorW motor : motors) {
+            if (motor.isBusy()) return true;
+        }
+
+        return false;
+    }
+
 
     /*
      * Robot Centric Driving
@@ -225,7 +237,7 @@ public class MecanumDrive {
      * @param timeout maximum time to attempt movement
      * @param wait whether to wait for completion before returning
      */
-    public void driveDistance(Direction dir, float inches, float power, float timeout, boolean wait) {
+    public void driveDistance(Direction dir, double inches, double power, double timeout, boolean wait) {
         switch (dir) {
             case FORWARD:
                 driveDistanceTank(inches, inches, power, timeout, wait);
@@ -243,14 +255,14 @@ public class MecanumDrive {
     }
 
     /** Drive left and right sides independently (tank style) */
-    public void driveDistanceTank(float leftInches, float rightInches, float power, float timeout, boolean wait) {
+    public void driveDistanceTank(double leftInches, double rightInches, double power, double timeout, boolean wait) {
         moveMotorsDistance(new MotorW[]{frontLeft, rearLeft}, leftInches, power, timeout);
         moveMotorsDistance(new MotorW[]{frontRight, rearRight}, rightInches, power, timeout);
         if (wait) waitUntilDone(timeout);
     }
 
     /** Strafe robot sideways */
-    private void strafe(float inches, float power, float timeout, boolean wait) {
+    private void strafe(double inches, double power, double timeout, boolean wait) {
         moveMotorsDistance(new MotorW[]{frontLeft, rearRight}, inches, power, timeout);
         moveMotorsDistance(new MotorW[]{frontRight, rearLeft}, -inches, power, timeout);
         if (wait) waitUntilDone(timeout);
@@ -263,7 +275,7 @@ public class MecanumDrive {
      * @param power motor power (0-1)
      * @param timeout max time to attempt movement
      */
-    private void moveMotorsDistance(@NonNull MotorW[] motors, float inches, float power, float timeout) {
+    private void moveMotorsDistance(@NonNull MotorW[] motors, double inches, double power, double timeout) {
         if (!opMode.opModeIsActive()) return;
 
         int targetCounts = (int) (inches * COUNTS_PER_INCH);
@@ -275,7 +287,7 @@ public class MecanumDrive {
     }
 
     /** Wait until all motors stop moving or timeout */
-    private void waitUntilDone(float timeout) {
+    private void waitUntilDone(double timeout) {
         runtime.reset();
         while (opMode.opModeIsActive() && runtime.seconds() < timeout) {
             boolean anyBusy = false;
@@ -293,13 +305,12 @@ public class MecanumDrive {
 
     /**
      * Drive straight at a specified heading for a given distance using proportional control.
-     * @param imu the robot IMU for heading feedback
      * @param angleDegrees target heading in degrees (0 = forward)
      * @param inches distance to travel
      * @param power base motor power (0-1)
      * @param timeout max time to attempt movement
      */
-    public void driveStraight(@NonNull IMUW imu, float angleDegrees, float inches, float power, float timeout) {
+    public void driveStraight(float angleDegrees, float inches, float power, float timeout) {
         double kP = 0.02; // proportional gain
         double startYaw = imu.getYaw();
         runtime.reset();
@@ -351,12 +362,11 @@ public class MecanumDrive {
 
     /**
      * Turn robot to a specific heading using IMU and PID
-     * @param imu the robot IMU
      * @param targetAngle desired yaw angle
      * @param power multiplied by the correction
      * @param toleranceDegrees how close to get to targetAngle before exiting (negative to hold forever)
      */
-    public void turnDegreesPID(@NonNull IMUW imu, double targetAngle, double power, double toleranceDegrees) {
+    public void turnDegreesPID(double targetAngle, double power, double toleranceDegrees) {
         turnPid.setOutputLimits(-1, 1); // limit motor output
         double startYaw = imu.getYaw();
 
