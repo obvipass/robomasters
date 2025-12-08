@@ -90,7 +90,7 @@ public class AdiObjectSensor extends LinearOpMode {
         while(opModeIsActive() && frontLeftDrive.isBusy() && frontRightDrive.isBusy() &&
                 rearLeftDrive.isBusy() && rearRightDrive.isBusy() && distanceSensor.getDistance(DistanceUnit.INCH) > 20) {
 
-            telemetry.addData("Distance of object", distanceSensor.getDistance(DistanceUnit.INCH));
+            telemetry.addData("Distance of object in inches - ", distanceSensor.getDistance(DistanceUnit.INCH));
             telemetry.update();
         }
 
