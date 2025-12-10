@@ -1,3 +1,19 @@
+/*
+ - * ULTIMATE ROBOT CLASS v3 — FINAL VERSION (2025-2026)
+ - * Everything you will EVER need in ONE file:
+ - * - Perfect encoder drive + strafe
+ - * - Perfect IMU turns
+ - * - Distance sensor
+ - * - Telemetry everywhere
+ - * - Public getters + setDrivePower() → NO MORE PRIVATE ERRORS!
+ - *
+ - * HOW TO USE:
+ - * robot = new Robot(hardwareMap, telemetry);
+ - * robot.driveStraight(24);
+ - * robot.turn(90);
+ - * robot.setDrivePower(...) in TeleOp
+ -
+ */
 package org.firstinspires.ftc.teamcode.members.ishani;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
