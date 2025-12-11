@@ -346,7 +346,7 @@ public class MecanumDrive {
         brake(500);
     }
 
-    public void driveStraightUnlessSeeInches(@NonNull IMUW imu, float angleDegrees, float inches, float power, float timeout, Distance2mW sensor, double tooCloseInches) {
+    public void driveStraightDistanceSensor(@NonNull IMUW imu, float angleDegrees, float inches, float power, float timeout, Distance2mW sensor, double tooCloseInches) {
         double kP = 0.02; // proportional gain
         double startYaw = imu.getYaw();
         runtime.reset();
@@ -391,6 +391,23 @@ public class MecanumDrive {
         brake(500);
     }
 
+    public void avoidObstacle(@NonNull IMUW imu, float inches, float power, Distance2mW sensor, double tooCloseInches){
+
+        double startCounts = frontLeft.getPosition();
+        double countsWhenDetect;
+        driveStraightDistanceSensor(imu,0,inches,power,100,sensor,tooCloseInches);
+        countsWhenDetect = frontLeft.getPosition();
+        double countsLeft = startCounts-countsWhenDetect;
+        turnDegreesPID(imu,90,0.2,0.5);
+        imu.resetYaw();
+        driveStraight(imu,0,15,power,100);
+        turnDegreesPID(imu,-90,0.2,0.5);
+        driveStraight(imu,0,(float)countsLeft/COUNTS_PER_INCH,power,100);
+        turnDegreesPID(imu,-90,0.2,0.5);
+        driveStraight(imu,0,15,power,100);
+        turnDegreesPID(imu,90,0.2,0.5);
+
+    }
 
     /*
      * PID
