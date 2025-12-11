@@ -4,7 +4,6 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.FRLib.hardware.Distance2mW;
 import org.firstinspires.ftc.teamcode.FRLib.hardware.IMUW;
 import org.firstinspires.ftc.teamcode.FRLib.robot.Robot;
@@ -14,7 +13,7 @@ import org.firstinspires.ftc.teamcode.utils.Logger;
 @Autonomous
 public class DriveUntilSeeSomethingVishruth extends LinearOpMode {
 
-    Logger logger = new Logger(Logger.LoggerMode.CRITICAL,telemetry);
+    Logger logger = new Logger(telemetry);
     Robot robot;
     IMUW imu;
     Distance2mW distanceSensor;
@@ -27,20 +26,6 @@ public class DriveUntilSeeSomethingVishruth extends LinearOpMode {
         logger.logData(Logger.LoggerMode.STATUS,"Hardware","Initialized");
         logger.update();
         waitForStart();
-        robot.drive.driveStraight(robot.imu,0,60,0.2f,100);
-        while (opModeIsActive()){
-            if (distanceSensor.getDistance(DistanceUnit.INCH) < 10){
-                logger.logData(Logger.LoggerMode.CRITICAL,"Sensed Object too close. Stopping",distanceSensor.getDistanceInches() + "Inch away");
-                logger.update();
-                robot.drive.brake(100);
-                robot.drive.stop();
-            } else {
-                logger.logData(Logger.LoggerMode.STATUS,"driving","Straight");
-                logger.update();
-                logger.logData(Logger.LoggerMode.CRITICAL,"Sensed Object is",distanceSensor.getDistanceInches() + "cm away");
-                logger.update();
-            }
-        }
-
+        robot.drive.driveStraightDistanceSensor(robot.imu,0,60,0.2f,100,robot.distanceSensor,10);
     }
 }
