@@ -1,10 +1,3 @@
-/*
-    Robot drives forward normally
-    If distance sensor sees anything closer than 18 inches →
-    → Turns 90° left → drives a bit → turns back → continues
-
- */
-
 package org.firstinspires.ftc.teamcode.members.ishani;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -16,9 +9,8 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-
 @Autonomous(name = "IS - Obstacle Avoidance", group = "ISSensor")
-public class ObstacleAvoidance extends LinearOpMode {
+public class ISObstacleAvoidance extends LinearOpMode {
 
     // ———————— YOUR ROBOT PARTS ————————
     private DcMotor frontLeft, frontRight, backLeft, backRight;
@@ -27,9 +19,10 @@ public class ObstacleAvoidance extends LinearOpMode {
 
     // ———————— SETTINGS YOU ASKED FOR ————————
     private static final double DRIVE_POWER          = 0.2;   // ← super slow!
-    private static final double MAX_TRAVEL_INCHES    = 60.0;  // ← 5 feet max
+    private static final double MAX_TRAVEL_INCHES    = 84.0;  // ← 7 feet max
     private static final double SAFE_DISTANCE_INCHES = 18.0;  // turn if closer than this
     private static final double TURN_DEGREES         = 90.0;  // turn 90° when obstacle
+    private static final double COUNTS_PER_DEGREE = 11.06;
 
     private double totalTraveled = 0.0;  // how far we have gone
 
@@ -37,10 +30,10 @@ public class ObstacleAvoidance extends LinearOpMode {
     public void runOpMode() {
 
         // ———————— 1. CONNECT MOTORS ————————
-        frontLeft  = hardwareMap.get(DcMotor.class, "frontLeft");
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        backLeft   = hardwareMap.get(DcMotor.class, "backLeft");
-        backRight  = hardwareMap.get(DcMotor.class, "backRight");
+        frontLeft  = hardwareMap.get(DcMotor.class, "front_left_motor");
+        frontRight = hardwareMap.get(DcMotor.class, "front_right_motor");
+        backLeft   = hardwareMap.get(DcMotor.class, "back_left_motor");
+        backRight  = hardwareMap.get(DcMotor.class, "back_right_motor");
 
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
@@ -63,6 +56,7 @@ public class ObstacleAvoidance extends LinearOpMode {
         telemetry.addData("Press PLAY → slow safe driving!", "");
         telemetry.update();
 
+
         waitForStart();
 
         while (opModeIsActive() && totalTraveled < MAX_TRAVEL_INCHES) {
@@ -75,7 +69,7 @@ public class ObstacleAvoidance extends LinearOpMode {
             // ———————— TOO FAR ALREADY? STOP! ————————
             if (totalTraveled >= MAX_TRAVEL_INCHES) {
                 stopDriving();
-                telemetry.addData("MAX 5 FEET REACHED", "Stopping!");
+                telemetry.addData("MAX 7 FEET REACHED", "Stopping!");
                 telemetry.update();
                 break;
             }
@@ -126,7 +120,6 @@ public class ObstacleAvoidance extends LinearOpMode {
         sleep((long)(timeSeconds * 1000));
         stopDriving();
     }
-
     // ———————— HELPER: TURN EXACT DEGREES (IMU) ————————
     private void turnDegrees(double degrees) {
         double target = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) + degrees;
