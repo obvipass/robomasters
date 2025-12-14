@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@TeleOp(name = "FieldRelative")
+@TeleOp(name = "IS FieldRelative")
 public class FieldRelative extends OpMode {
 
     private DcMotor frontLeftMotor;
