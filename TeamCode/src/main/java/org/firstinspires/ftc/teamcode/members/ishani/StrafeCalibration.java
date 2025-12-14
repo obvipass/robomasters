@@ -60,10 +60,10 @@ public class StrafeCalibration extends LinearOpMode {
         backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Start strafing RIGHT slowly (positive strafe)
-        frontLeft.setPower(0.4);
-        frontRight.setPower(-0.4);
-        backLeft.setPower(-0.4);
-        backRight.setPower(0.4);
+        frontLeft.setPower(0.2);
+        frontRight.setPower(-0.2);
+        backLeft.setPower(-0.2);
+        backRight.setPower(0.2);
 
         telemetry.addData("→→→ STRAFING RIGHT →→→", "Go until center hits 36-inch mark!");
         telemetry.update();

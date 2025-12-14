@@ -39,7 +39,7 @@ public class AutoAlignOneSensor extends LinearOpMode {
         backLeft.setDirection(DcMotor.Direction.REVERSE);
 
         // Connect your ONE sensor — name it "sideSensor" in config!
-        sideSensor = hardwareMap.get(DistanceSensor.class, "sideSensor");
+        sideSensor = hardwareMap.get(DistanceSensor.class, "distance_sensor");
 
         telemetry.addData("AUTO ALIGN READY", "1-sensor centering!");
         telemetry.addData("Target distance from wall", "%.1f inches", TARGET_DISTANCE_INCHES);

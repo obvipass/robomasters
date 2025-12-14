@@ -82,7 +82,7 @@ public class SelfCorrectingIMU extends LinearOpMode {
 
     // ★★★★★ TURN TO EXACT ANGLE (self-correcting!) ★★★★★
     private void turnTo(double targetDegrees) {
-        double power = 0.4;
+        double power = 0.2;
         double tolerance = 1.0;  // stop when within 1 degree
 
         telemetry.addData("TURNING TO", "%.1f°", targetDegrees);

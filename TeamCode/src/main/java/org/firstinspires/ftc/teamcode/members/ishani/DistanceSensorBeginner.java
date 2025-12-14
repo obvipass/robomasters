@@ -15,7 +15,7 @@ public class DistanceSensorBeginner extends LinearOpMode {
     public void runOpMode() {
 
         // ———————— 1. CONNECT THE SENSOR ————————
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");  // change "distance" if yours is named differently
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "distance_sensor");  // change "distance" if yours is named differently
 
         telemetry.addData("DISTANCE SENSOR READY", "Point me at something!");
         telemetry.addData("I will show distance in INCHES and CM", "");

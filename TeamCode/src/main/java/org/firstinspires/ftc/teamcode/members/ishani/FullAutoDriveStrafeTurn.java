@@ -90,10 +90,10 @@ public class FullAutoDriveStrafeTurn extends LinearOpMode {
         runToPosition();  // tell motors to go to that position
 
         // Start moving at 60% speed
-        frontLeft.setPower(0.6);
-        frontRight.setPower(0.6);
-        backLeft.setPower(0.6);
-        backRight.setPower(0.6);
+        frontLeft.setPower(0.2);
+        frontRight.setPower(0.2);
+        backLeft.setPower(0.2);
+        backRight.setPower(0.2);
 
         // Wait until done + show progress on phone
         while (opModeIsActive() && frontLeft.isBusy()) {

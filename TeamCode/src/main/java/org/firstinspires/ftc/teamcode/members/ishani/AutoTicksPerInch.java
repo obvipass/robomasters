@@ -58,10 +58,10 @@ public class AutoTicksPerInch extends LinearOpMode {
         backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Start driving forward slowly
-        frontLeft.setPower(0.4);
-        frontRight.setPower(0.4);
-        backLeft.setPower(0.4);
-        backRight.setPower(0.4);
+        frontLeft.setPower(0.2);
+        frontRight.setPower(0.2);
+        backLeft.setPower(0.2);
+        backRight.setPower(0.2);
 
         telemetry.addData("DRIVING", "Go straight until you hit 36 inches...");
         telemetry.addData("INSTRUCTIONS", "When front of robot reaches the mark → PRESS SQUARE (STOP)");

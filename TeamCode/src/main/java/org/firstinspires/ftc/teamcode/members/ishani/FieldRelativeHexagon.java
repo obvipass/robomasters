@@ -93,7 +93,7 @@ public class FieldRelativeHexagon extends LinearOpMode {
         setTargetPosition(ticks, ticks, ticks, ticks);
         runToPosition();
 
-        double power = 0.6;
+        double power = 0.2;
 
         while (opModeIsActive() && frontLeft.isBusy()) {
 

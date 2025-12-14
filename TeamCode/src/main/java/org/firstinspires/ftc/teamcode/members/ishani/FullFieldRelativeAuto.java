@@ -96,7 +96,7 @@ public class FullFieldRelativeAuto extends LinearOpMode {
         setTargetPosition(ticksY + ticksX, ticksY - ticksX, ticksY - ticksX, ticksY + ticksX);
         runToPosition();
 
-        double basePower = 0.6;
+        double basePower = 0.2;
 
         while (opModeIsActive() && frontLeft.isBusy()) {
 

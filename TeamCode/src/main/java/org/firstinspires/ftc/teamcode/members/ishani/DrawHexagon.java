@@ -72,10 +72,10 @@ public class DrawHexagon extends LinearOpMode {
         setTargetPosition(ticks, ticks, ticks, ticks);
         runToPosition();
 
-        frontLeft.setPower(0.6);
-        frontRight.setPower(0.6);
-        backLeft.setPower(0.6);
-        backRight.setPower(0.6);
+        frontLeft.setPower(0.2);
+        frontRight.setPower(0.2);
+        backLeft.setPower(0.2);
+        backRight.setPower(0.2);
 
         while (opModeIsActive() && frontLeft.isBusy()) {
             telemetry.addData("Driving", "%.1f / %.0f inches",

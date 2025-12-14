@@ -21,8 +21,8 @@ public final class RobotConfig {
             RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
 
     // ———————— DRIVE SPEEDS ————————
-    public static final double DRIVE_SPEED = 0.6;
-    public static final double TURN_SPEED  = 0.5;
+    public static final double DRIVE_SPEED = 0.2;
+    public static final double TURN_SPEED  = 0.2;
 
     // ———————— DISTANCE SENSOR SETTINGS ————————
     public static final String DISTANCE_SENSOR_NAME = "distance";
