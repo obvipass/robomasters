@@ -114,7 +114,7 @@ public class AdiAvoidObject extends LinearOpMode {
 
 
         while (opModeIsActive() && frontLeftDrive.isBusy() && frontRightDrive.isBusy() &&
-                rearLeftDrive.isBusy() && rearRightDrive.isBusy() && distanceSensor.getDistance(DistanceUnit.INCH) > 20) {
+                rearLeftDrive.isBusy() && rearRightDrive.isBusy() && distanceSensor.getDistance(DistanceUnit.INCH) > 25) {
             removeYaw(power);
         }
 
