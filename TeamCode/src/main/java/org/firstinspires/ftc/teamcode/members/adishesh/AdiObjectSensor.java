@@ -100,9 +100,11 @@ public class AdiObjectSensor extends LinearOpMode {
         rearRightDrive.setPower(0);
 
 
-
         telemetry.addData("Moved to ", "%7d %7d %7d %7d", newFrontLeftPosition, newFrontRightPosition, newRearLeftPosition, newRearRightPosition);
         telemetry.update();
+
+
+
 
     }
 
