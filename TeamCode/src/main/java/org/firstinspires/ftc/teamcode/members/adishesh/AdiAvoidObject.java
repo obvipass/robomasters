@@ -34,8 +34,8 @@ public class AdiAvoidObject extends LinearOpMode {
         rearLeftDrive = hardwareMap.get(DcMotor.class, "back_left_motor");
         frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_motor");
         rearRightDrive = hardwareMap.get(DcMotor.class, "back_right_motor");
-
         distanceSensor = hardwareMap.get(DistanceSensor.class, "distance_sensor");
+        imu = hardwareMap.get(IMU.class, "imu");
 
         frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
