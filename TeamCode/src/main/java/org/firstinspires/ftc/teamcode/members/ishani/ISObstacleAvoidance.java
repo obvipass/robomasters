@@ -14,7 +14,7 @@ public class ISObstacleAvoidance extends LinearOpMode {
 
     // ———————— YOUR ROBOT PARTS ————————
     private DcMotor frontLeft, frontRight, backLeft, backRight;
-    private DistanceSensor frontSensor;   // ← your distance sensor pointing forward
+    private DistanceSensor frontSensor;
     private IMU imu;
 
     // ———————— SETTINGS YOU ASKED FOR ————————
