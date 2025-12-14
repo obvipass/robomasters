@@ -209,6 +209,7 @@ public class AvoidAnnoyingObject extends LinearOpMode {
         turnDegrees(0.2,-90);
         driveStraightInches(0.1,24);
         turnDegrees(0.2,90);
+        driveStraightInches(0.2,24);
         sleep(800);
 
         stopMotors();
