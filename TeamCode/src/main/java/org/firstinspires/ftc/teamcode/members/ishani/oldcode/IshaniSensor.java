@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous(name = "ISensor")
+@Autonomous(name = "IS - Sensor")
 public class IshaniSensor extends LinearOpMode {
 
     // Motors
