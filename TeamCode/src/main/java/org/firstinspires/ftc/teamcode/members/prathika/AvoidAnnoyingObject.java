@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous
+@Autonomous(name = "Prathika - Avoidance")
 public class AvoidAnnoyingObject extends LinearOpMode {
 
     // Motors
@@ -34,20 +34,21 @@ public class AvoidAnnoyingObject extends LinearOpMode {
 
 
 
-        frontLeftDrive  = hardwareMap.get(DcMotor.class, "frontLeft");
-        frontRightDrive = hardwareMap.get(DcMotor.class, "frontRight");
-        backLeftDrive   = hardwareMap.get(DcMotor.class, "backLeft");
-        backRightDrive  = hardwareMap.get(DcMotor.class, "backRight");
+        frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_motor");
+        backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_motor");
+        frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_motor");
+        backRightDrive = hardwareMap.get(DcMotor.class, "back_right_motor");
 
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "distanceSensor");
 
-        // ---- Motor directions ----
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "distance_sensor");
+
+
         frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
         backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
         frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
         backRightDrive.setDirection(DcMotor.Direction.REVERSE);
 
-        // ---- Encoders ----
+
         frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -202,7 +203,7 @@ public class AvoidAnnoyingObject extends LinearOpMode {
 
         turnDegrees(0.2,90 );
         driveStraightInches(0.1,24);
-        turnDegrees(0.2,90 );
+        turnDegrees(0.2,-90 );
         driveStraightInches(0.1,24 );
         turnDegrees(0.2,-90);
         driveStraightInches(0.1,24);
