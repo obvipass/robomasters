@@ -37,12 +37,8 @@ public class AdiAvoidObject extends LinearOpMode {
         distanceSensor = hardwareMap.get(DistanceSensor.class, "distance_sensor");
         imu = hardwareMap.get(IMU.class, "imu");
 
-        /*
-        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rearLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rearRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-         */
+
+       imu.resetYaw();
 
 
         telemetry.addData("Hardware is updated", null);
@@ -122,7 +118,7 @@ public class AdiAvoidObject extends LinearOpMode {
 
         while (opModeIsActive() && frontLeftDrive.isBusy() && frontRightDrive.isBusy() &&
                 rearLeftDrive.isBusy() && rearRightDrive.isBusy() ) {
-            //removeYaw(power);
+            removeYaw(power);
         }
 
         frontLeftDrive.setPower(0);
@@ -141,12 +137,12 @@ public class AdiAvoidObject extends LinearOpMode {
 
         while (opModeIsActive() && frontLeftDrive.isBusy() && frontRightDrive.isBusy() &&
                 rearLeftDrive.isBusy() && rearRightDrive.isBusy() && distanceSensor.getDistance(DistanceUnit.INCH) > 20) {
-            //removeYaw(power);
+            removeYaw(power);
         }
 
         frontLeftDrive.setPower(0);
         frontRightDrive.setPower(0);
-        rearLeftDrive.setPower(0);  //code
+        rearLeftDrive.setPower(0);
         rearRightDrive.setPower(0);
 
 
@@ -194,7 +190,7 @@ public class AdiAvoidObject extends LinearOpMode {
 
 
     private void removeYaw(double power) {
-        while (opModeIsActive() && frontLeftDrive.isBusy() && frontRightDrive.isBusy() && rearLeftDrive.isBusy() && rearRightDrive.isBusy()) {
+
             int targetYaw = 0;
             double currentYaw = imu.getRobotYawPitchRollAngles().getYaw();
             double error = targetYaw - currentYaw;
@@ -217,7 +213,7 @@ public class AdiAvoidObject extends LinearOpMode {
             telemetry.addData("LeftPower", leftPower);
             telemetry.addData("RightPower",rightPower);
             telemetry.update();
-        }
+
     }
 
 }
