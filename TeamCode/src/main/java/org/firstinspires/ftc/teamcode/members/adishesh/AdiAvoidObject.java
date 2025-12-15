@@ -37,18 +37,31 @@ public class AdiAvoidObject extends LinearOpMode {
         distanceSensor = hardwareMap.get(DistanceSensor.class, "distance_sensor");
         imu = hardwareMap.get(IMU.class, "imu");
 
+        /*
         frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rearLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rearRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+         */
+
+
+        telemetry.addData("Hardware is updated", null);
+        telemetry.update();
+
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         rearLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
         rearRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
+        telemetry.addData("Motors are ready", null);
+        telemetry.update();
+
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP, RevHubOrientationOnRobot.UsbFacingDirection.LEFT);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
+
+        telemetry.addData("IMU has initialized", null);
+        telemetry.update();
 
         waitForStart();
 
@@ -56,36 +69,102 @@ public class AdiAvoidObject extends LinearOpMode {
         int rightDist = 7 * 12 ;
         double initialTargetCounts = leftDist * COUNTS_PER_INCH;
 
-      boolean success =   move(leftDist , rightDist, POWER);
+      boolean success =   moveWithObstacleCheck(leftDist , rightDist, POWER);
       if (!success) {
           int countsAtObstacle = frontLeftDrive.getCurrentPosition(); // counts at reaching obstacle
           double newTargetCounts = initialTargetCounts - countsAtObstacle;
-          int lateralDist = moveRightUntilNoObstacleInSight();
-          move(newTargetCounts, newTargetCounts, POWER);
-          move(lateralDist, -lateralDist, POWER); // move left
-      }
+          telemetry.addData("initial counts", initialTargetCounts);
+          telemetry.addData("counts at obstacle", countsAtObstacle);
+          telemetry.addData("new target counts", newTargetCounts);
+          telemetry.update();
+          sleep(1000);
 
-        sleep(1000);
+          int lateralDist = moveRightUntilNoObstacleInSight();
+
+         move(newTargetCounts, newTargetCounts, POWER);
+         telemetry.addData("Moved ahead ", newTargetCounts);
+         telemetry.update();
+         sleep(1000);
+
+         move(-lateralDist, lateralDist, POWER); // move left
+          telemetry.addData("Moved left by ", lateralDist);
+          telemetry.update();
+          sleep(1000);
+
+      }
 
     }
 
     private int moveRightUntilNoObstacleInSight() {
         int count = 0;
-        while (distanceSensor.getDistance(DistanceUnit.INCH) <= 20 ) {
-            move(-1,1, POWER); // Move inch by inch until no sight of obstacle.
+        while ( distanceSensor.getDistance(DistanceUnit.INCH) <= 20) {
+             // Move inch by inch until no sight of obstacle.
+            move(1,-1, POWER);
             count += 1;
         }
-        move(-10,10, POWER); // Buffer for left arm of the robot.
-        count += 10;
+        move(12,-12, POWER); // Buffer for left arm of the robot.
+        count += 12;
+
+        telemetry.addData(" moveRightUntilNoObstacleInSight has functioned", count);
+        telemetry.update();
+        sleep(1000);
         return count;
+
+
     }
 
-    private boolean move(int leftDist, int rightDist, double power) {
-        return move(leftDist * COUNTS_PER_INCH,rightDist * COUNTS_PER_INCH, power );
+    private void move(int leftDist, int rightDist, double power) {
+        move(leftDist * COUNTS_PER_INCH,rightDist * COUNTS_PER_INCH, power );
+    }
+
+    private void move(double leftDistCounts, double rightDistCounts, double power) {
+        setEncoderValues(leftDistCounts, rightDistCounts, power);
+
+        while (opModeIsActive() && frontLeftDrive.isBusy() && frontRightDrive.isBusy() &&
+                rearLeftDrive.isBusy() && rearRightDrive.isBusy() ) {
+            //removeYaw(power);
+        }
+
+        frontLeftDrive.setPower(0);
+        frontRightDrive.setPower(0);
+        rearLeftDrive.setPower(0);
+        rearRightDrive.setPower(0);
+    }
+
+    private boolean moveWithObstacleCheck(int leftDist, int rightDist, double power) {
+        return moveWithObstacleCheck(leftDist * COUNTS_PER_INCH,rightDist * COUNTS_PER_INCH, power );
     }
 
 
-    private boolean move(double leftDistCounts, double rightDistCounts, double power) {
+    private boolean moveWithObstacleCheck(double leftDistCounts, double rightDistCounts, double power) {
+        setEncoderValues(leftDistCounts, rightDistCounts, power);
+
+        while (opModeIsActive() && frontLeftDrive.isBusy() && frontRightDrive.isBusy() &&
+                rearLeftDrive.isBusy() && rearRightDrive.isBusy() && distanceSensor.getDistance(DistanceUnit.INCH) > 20) {
+            //removeYaw(power);
+        }
+
+        frontLeftDrive.setPower(0);
+        frontRightDrive.setPower(0);
+        rearLeftDrive.setPower(0);
+        rearRightDrive.setPower(0);
+
+
+        //telemetry.addData("Moved to ", "%7d %7d %7d %7d", newFrontLeftPosition, newFrontRightPosition, newRearLeftPosition, newRearRightPosition);
+        //telemetry.update();
+
+        telemetry.addData("moveWithObstacleCheck method has functioned", null);
+        telemetry.update();
+        //sleep(10000);
+
+        if (distanceSensor.getDistance(DistanceUnit.INCH) <= 20)  {
+            return false;
+        }
+        return true;
+    }
+
+    private void setEncoderValues(double leftDistCounts, double rightDistCounts, double power) {
+
         frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rearLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -93,8 +172,8 @@ public class AdiAvoidObject extends LinearOpMode {
 
         int newFrontLeftPosition = frontLeftDrive.getCurrentPosition() + (int) leftDistCounts;
         int newFrontRightPosition = frontRightDrive.getCurrentPosition() + (int) rightDistCounts;
-        int newRearLeftPosition = rearLeftDrive.getCurrentPosition() + (int) leftDistCounts;
-        int newRearRightPosition = rearLeftDrive.getCurrentPosition() + (int) rightDistCounts;
+        int newRearLeftPosition = rearLeftDrive.getCurrentPosition() + (int) rightDistCounts;
+        int newRearRightPosition = rearLeftDrive.getCurrentPosition() + (int) leftDistCounts;
 
 
         frontLeftDrive.setTargetPosition(newFrontLeftPosition);
@@ -111,28 +190,8 @@ public class AdiAvoidObject extends LinearOpMode {
         frontRightDrive.setPower(power);
         rearLeftDrive.setPower(power);
         rearRightDrive.setPower(power);
-
-
-        while (opModeIsActive() && frontLeftDrive.isBusy() && frontRightDrive.isBusy() &&
-                rearLeftDrive.isBusy() && rearRightDrive.isBusy() && distanceSensor.getDistance(DistanceUnit.INCH) > 25) {
-            removeYaw(power);
-        }
-
-        frontLeftDrive.setPower(0);
-        frontRightDrive.setPower(0);
-        rearLeftDrive.setPower(0);
-        rearRightDrive.setPower(0);
-
-
-        telemetry.addData("Moved to ", "%7d %7d %7d %7d", newFrontLeftPosition, newFrontRightPosition, newRearLeftPosition, newRearRightPosition);
-        telemetry.update();
-
-        if (distanceSensor.getDistance(DistanceUnit.INCH) <= 20)  {
-            return false;
-        }
-        return true;
-
     }
+
 
     private void removeYaw(double power) {
         while (opModeIsActive() && frontLeftDrive.isBusy() && frontRightDrive.isBusy() && rearLeftDrive.isBusy() && rearRightDrive.isBusy()) {
@@ -153,6 +212,11 @@ public class AdiAvoidObject extends LinearOpMode {
             rearLeftDrive.setPower(leftPower);
             frontRightDrive.setPower(rightPower);
             rearRightDrive.setPower(rightPower);
+
+            telemetry.addData("removeYaw has worked", null);
+            telemetry.addData("LeftPower", leftPower);
+            telemetry.addData("RightPower",rightPower);
+            telemetry.update();
         }
     }
 
