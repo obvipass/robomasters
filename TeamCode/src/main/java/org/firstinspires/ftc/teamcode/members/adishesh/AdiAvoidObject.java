@@ -146,7 +146,7 @@ public class AdiAvoidObject extends LinearOpMode {
 
         frontLeftDrive.setPower(0);
         frontRightDrive.setPower(0);
-        rearLeftDrive.setPower(0);
+        rearLeftDrive.setPower(0);  //code
         rearRightDrive.setPower(0);
 
 
