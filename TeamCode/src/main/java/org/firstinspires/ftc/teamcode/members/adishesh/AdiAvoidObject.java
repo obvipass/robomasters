@@ -172,6 +172,7 @@ public class AdiAvoidObject extends LinearOpMode {
         int newRearRightPosition = rearLeftDrive.getCurrentPosition() + (int) leftDistCounts;
 
 
+
         frontLeftDrive.setTargetPosition(newFrontLeftPosition);
         frontRightDrive.setTargetPosition(newFrontRightPosition);
         rearLeftDrive.setTargetPosition(newRearLeftPosition);
@@ -179,7 +180,7 @@ public class AdiAvoidObject extends LinearOpMode {
 
         frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rearLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rearLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);             
         rearRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         frontLeftDrive.setPower(power);
