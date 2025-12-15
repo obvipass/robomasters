@@ -12,15 +12,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class AvoidAnnoyingObject extends LinearOpMode {
 
     // Motors
-    private DcMotor frontLeftDrive;
-    private DcMotor frontRightDrive;
-    private DcMotor backLeftDrive;
-    private DcMotor backRightDrive;
+    private DcMotor frontLeftDrive = null;
+    private DcMotor frontRightDrive = null;
+    private DcMotor backLeftDrive = null;
+    private DcMotor backRightDrive = null;
 
 
-    private DistanceSensor distanceSensor;
+    DistanceSensor distanceSensor;
 
-    // Threshold in ICHESSSS
+    // Threshold in CHEESINESS
 
     static final double COUNTS_PER_DEGREE = 11.06;
     static final double THRESHOLD = 10.0;
