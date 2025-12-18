@@ -19,11 +19,11 @@ public class LibTest extends LinearOpMode {
 
         logger.logData(Logger.LoggerMode.CRITICAL, "CurTest", "driveDistanceTank, 60/60 forward");
         logger.update();
-        drive.driveDistanceTank(60, 60, 0.2f, 5, true);
+        drive.driveDistanceTank(60, 60, 0.2f, true);
 
         logger.logData(Logger.LoggerMode.CRITICAL, "CurTest", "driveDistanceTank, 60 backward");
         logger.update();
-        drive.driveDistance(MecanumDrive.Direction.BACKWARD, 60, 0.2f, 5, true);
+        drive.driveDistance(MecanumDrive.Direction.BACKWARD, 60, 0.2f, true);
 
         logger.logData(Logger.LoggerMode.CRITICAL, "CurTest", "turnDegreesPID 90 counter");
         logger.update();
@@ -31,11 +31,11 @@ public class LibTest extends LinearOpMode {
 
         logger.logData(Logger.LoggerMode.CRITICAL, "CurTest", "strafe right 60 inch");
         logger.update();
-        drive.driveDistance(MecanumDrive.Direction.RIGHT, 60, 0.2f, 10, true);
+        drive.driveDistance(MecanumDrive.Direction.RIGHT, 60, 0.2f, true);
 
         logger.logData(Logger.LoggerMode.CRITICAL, "CurTest", "strafe left 60 inch");
         logger.update();
-        drive.driveDistance(MecanumDrive.Direction.LEFT, 60, 0.2f, 10, true);
+        drive.driveDistance(MecanumDrive.Direction.LEFT, 60, 0.2f, true);
 
         logger.logData(Logger.LoggerMode.CRITICAL, "CurTest", "turnpid 90 deg clockwise");
         logger.update();
@@ -43,10 +43,10 @@ public class LibTest extends LinearOpMode {
 
         logger.logData(Logger.LoggerMode.CRITICAL, "CurTest", "driveStraight 60 inches");
         logger.update();
-        drive.driveStraight(0, 60, 0.2f, 10);
+        drive.driveStraight(0, 60, 0.2f);
 
         logger.logData(Logger.LoggerMode.CRITICAL, "CurTest", "driveStraight -60 inches (backwards)");
         logger.update();
-        drive.driveStraight(0, -60, 0.2f, 10);
+        drive.driveStraight(0, -60, 0.2f);
     }
 }

@@ -237,38 +237,37 @@ public class MecanumDrive {
      * @param dir direction to move
      * @param inches distance to travel
      * @param power speed (0-1)
-     * @param timeout maximum time to attempt movement
      * @param wait whether to wait for completion before returning
      */
-    public void driveDistance(Direction dir, double inches, double power, double timeout, boolean wait) {
+    public void driveDistance(Direction dir, double inches, double power, boolean wait) {
         switch (dir) {
             case FORWARD:
-                driveDistanceTank(inches, inches, power, timeout, wait);
+                driveDistanceTank(inches, inches, power, wait);
                 break;
             case BACKWARD:
-                driveDistanceTank(-inches, -inches, power, timeout, wait);
+                driveDistanceTank(-inches, -inches, power, wait);
                 break;
             case RIGHT:
-                strafe(inches, power, timeout, wait);
+                strafe(inches, power, wait);
                 break;
             case LEFT:
-                strafe(-inches, power, timeout, wait);
+                strafe(-inches, power, wait);
                 break;
         }
     }
 
     /** Drive left and right sides independently (tank style) */
-    public void driveDistanceTank(double leftInches, double rightInches, double power, double timeout, boolean wait) {
-        moveMotorsDistance(new MotorW[]{frontLeft, rearLeft}, leftInches, power, timeout);
-        moveMotorsDistance(new MotorW[]{frontRight, rearRight}, rightInches, power, timeout);
-        if (wait) waitUntilDone(timeout);
+    public void driveDistanceTank(double leftInches, double rightInches, double power, boolean wait) {
+        moveMotorsDistance(new MotorW[]{frontLeft, rearLeft}, leftInches, power);
+        moveMotorsDistance(new MotorW[]{frontRight, rearRight}, rightInches, power);
+        if (wait) waitUntilDone(TIMEOUT_SECONDS);
     }
 
     /** Strafe robot sideways */
-    private void strafe(double inches, double power, double timeout, boolean wait) {
-        moveMotorsDistance(new MotorW[]{frontLeft, rearRight}, inches, power, timeout);
-        moveMotorsDistance(new MotorW[]{frontRight, rearLeft}, -inches, power, timeout);
-        if (wait) waitUntilDone(timeout);
+    private void strafe(double inches, double power, boolean wait) {
+        moveMotorsDistance(new MotorW[]{frontLeft, rearRight}, inches, power);
+        moveMotorsDistance(new MotorW[]{frontRight, rearLeft}, -inches, power);
+        if (wait) waitUntilDone(TIMEOUT_SECONDS);
     }
 
     /**
@@ -276,9 +275,8 @@ public class MecanumDrive {
      * @param motors array of motors to move
      * @param inches distance in inches
      * @param power motor power (0-1)
-     * @param timeout max time to attempt movement
      */
-    private void moveMotorsDistance(@NonNull MotorW[] motors, double inches, double power, double timeout) {
+    private void moveMotorsDistance(@NonNull MotorW[] motors, double inches, double power) {
         if (!opMode.opModeIsActive()) return;
 
         int targetCounts = (int) (inches * COUNTS_PER_INCH);
@@ -311,9 +309,8 @@ public class MecanumDrive {
      * @param angleDegrees target heading in degrees (0 = forward)
      * @param inches distance to travel
      * @param power base motor power (0-1)
-     * @param timeout max time to attempt movement
      */
-    public void driveStraight(float angleDegrees, float inches, float power, float timeout) {
+    public void driveStraight(double angleDegrees, double inches, double power) {
         double kP = 0.02; // proportional gain
         double startYaw = imu.getYaw();
         runtime.reset();
@@ -328,7 +325,7 @@ public class MecanumDrive {
             m.runToPosition(targetCounts);
         }
 
-        while (opMode.opModeIsActive() && runtime.seconds() < timeout) {
+        while (opMode.opModeIsActive() && runtime.seconds() < TIMEOUT_SECONDS) {
             // check if any motor isn't finished
             boolean done = true;
             for (MotorW m : motors) {

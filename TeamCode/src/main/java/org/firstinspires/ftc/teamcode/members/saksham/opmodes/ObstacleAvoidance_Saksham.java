@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 @Autonomous
 public class ObstacleAvoidance_Saksham extends LinearOpMode {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(ObstacleAvoidance_Saksham.class);
     Logger logger = new Logger(telemetry);
     double distanceTraveled = 0;
     double targetInches = 84;
@@ -26,18 +25,18 @@ public class ObstacleAvoidance_Saksham extends LinearOpMode {
             distanceTraveled += robot.drive.driveStraightUntilObstacle(targetInches, 10, robot.distanceSensor, 0.2);
             logger.logData(Logger.LoggerMode.CRITICAL, "distanceTraveled", distanceTraveled);
             logger.update();
-            robot.drive.driveDistance(MecanumDrive.Direction.RIGHT, sidePass, 0.2, 10, true);
+            robot.drive.driveDistance(MecanumDrive.Direction.RIGHT, sidePass, 0.2, true);
 
-            robot.drive.driveStraight((float) (0 - robot.imu.getYaw()), (float)forwardPass, 0.2f, 10);
+            robot.drive.driveStraight((float) (0 - robot.imu.getYaw()), (float)forwardPass, 0.2f);
             distanceTraveled += forwardPass;
             logger.logData(Logger.LoggerMode.CRITICAL, "distanceTraveled", distanceTraveled);
             logger.update();
 
-            robot.drive.driveDistance(MecanumDrive.Direction.LEFT, sidePass, 0.2, 10, true);
+            robot.drive.driveDistance(MecanumDrive.Direction.LEFT, sidePass, 0.2, true);
 
             logger.logData(Logger.LoggerMode.CRITICAL, "remaining", targetInches - distanceTraveled);
             logger.update();
-            robot.drive.driveStraight((float) (0 - robot.imu.getYaw()), (float) (targetInches - distanceTraveled), 0.2f, 10);
+            robot.drive.driveStraight((float) (0 - robot.imu.getYaw()), (float) (targetInches - distanceTraveled), 0.2f);
         }
     }
 }
