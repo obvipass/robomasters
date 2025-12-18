@@ -18,10 +18,15 @@ public class ForwardStop extends LinearOpMode {
 
         robot.drive.driveVector(1, 0 , 0, 0.2);
         while (opModeIsActive()) {
-            if (robot.distanceSensor.getDistanceInches() < 15) {
+            double distance = robot.distanceSensor.getDistanceInches();
+            logger.logData(Logger.LoggerMode.CRITICAL, "Distance", distance);
+
+            if (distance < 15) {
                 robot.drive.brake(20000);
                 break;
             }
+
+            logger.update();
         }
     }
 }
