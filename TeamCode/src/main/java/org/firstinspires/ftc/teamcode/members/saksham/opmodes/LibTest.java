@@ -27,7 +27,7 @@ public class LibTest extends LinearOpMode {
 
         logger.logData(Logger.LoggerMode.CRITICAL, "CurTest", "turnDegreesPID 90 counter");
         logger.update();
-        drive.turnDegreesPID(robot.imu, -90, 0.2f, 0.01f);
+        drive.turnDegreesPID(-90, 0.2f, 0.01f);
 
         logger.logData(Logger.LoggerMode.CRITICAL, "CurTest", "strafe right 60 inch");
         logger.update();
@@ -39,14 +39,14 @@ public class LibTest extends LinearOpMode {
 
         logger.logData(Logger.LoggerMode.CRITICAL, "CurTest", "turnpid 90 deg clockwise");
         logger.update();
-        drive.turnDegreesPID(robot.imu, 90, 0.2f, 0.01f);
+        drive.turnDegreesPID(90, 0.2f, 0.01f);
 
         logger.logData(Logger.LoggerMode.CRITICAL, "CurTest", "driveStraight 60 inches");
         logger.update();
-        drive.driveStraight(robot.imu, 0, 60, 0.2f, 10);
+        drive.driveStraight(0, 60, 0.2f, 10);
 
         logger.logData(Logger.LoggerMode.CRITICAL, "CurTest", "driveStraight -60 inches (backwards)");
         logger.update();
-        drive.driveStraight(robot.imu, 0, -60, 0.2f, 10);
+        drive.driveStraight(0, -60, 0.2f, 10);
     }
 }

@@ -35,7 +35,7 @@ public class PIDTest extends LinearOpMode {
 
 
         // Start a PID turn in a separate thread (turn to 90 degrees)
-        new Thread(() -> robot.drive.turnDegreesPID(robot.imu, 90, 0.2, -1)).start();
+        new Thread(() -> robot.drive.turnDegreesPID(90, 0.2, -1)).start();
 
         while (opModeIsActive()) {
             handlePIDSelection();

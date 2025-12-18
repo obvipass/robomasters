@@ -35,6 +35,11 @@ public class Logger {
         this.telemetry = telemetry;
     }
 
+    public Logger(Telemetry telemetry) {
+        this.currentMode = LoggerMode.CRITICAL;
+        this.telemetry = telemetry;
+    }
+
     public void setMode(LoggerMode mode) {
         this.currentMode = mode;
     }

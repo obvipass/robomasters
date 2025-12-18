@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.FRLib.hardware.Distance2mW;
 import org.firstinspires.ftc.teamcode.utils.Logger;
 import org.firstinspires.ftc.teamcode.FRLib.hardware.MotorW;
 import org.firstinspires.ftc.teamcode.FRLib.hardware.IMUW;
@@ -41,7 +42,9 @@ public class MecanumDrive {
             (COUNTS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER_MM * (float)Math.PI);
     private static final float COUNTS_PER_INCH = COUNTS_PER_MM * 25.4f;
 
+    private final double TIMEOUT_SECONDS = 30;
     private final double OVERSHOOT_PER_INCH;
+    private final double DISTANCE_SENSOR_GAP_INCHES = 7.5;
 
     /** Cardinal directions for movement convenience */
     public enum Direction {
@@ -355,6 +358,63 @@ public class MecanumDrive {
         brake(500);
     }
 
+    /**
+     * Drive straight at a specified heading for a given distance using proportional control.
+     * @param targetInches distance to travel
+     * @param stopDistanceInches how far from FRONT of robot (NOT from sensor) to
+     * @param sensor the distance sensor to use, should be robot's front sensor
+     * @param power base motor power (0-1)
+     */
+    public double driveStraightUntilObstacle(double targetInches, double stopDistanceInches, Distance2mW sensor, double power) {
+        double kP = 0.02; // proportional gain
+        double startYaw = imu.getYaw();
+
+        stopDistanceInches += DISTANCE_SENSOR_GAP_INCHES;
+
+        runtime.reset();
+
+        int targetCounts = (int)(Math.abs(targetInches) * COUNTS_PER_INCH);
+        double direction = Math.signum(targetInches); // 1 for forward, -1 for backward
+
+        // Reset encoders, run to position
+        for (MotorW m : motors) {
+            m.resetEncoder();
+            m.runUsingEncoder();
+            m.runToPosition(targetCounts);
+        }
+
+        while (opMode.opModeIsActive() && sensor.getDistanceInches() > stopDistanceInches && runtime.seconds() < TIMEOUT_SECONDS) {
+            // check if any motor isn't finished
+            boolean done = true;
+            for (MotorW m : motors) {
+                if (Math.abs(m.getPosition()) < targetCounts) {
+                    done = false;
+                    break;
+                }
+            }
+
+            // if all motors are done moving to position, exit
+            if (done) break;
+
+            double currentYaw = imu.getYaw() - startYaw;
+            double error = 0 - currentYaw;
+
+            error = AngleUnit.normalizeDegrees(error);
+
+            double correction = kP * error;
+
+            frontLeft.setPower(power + correction);
+            rearLeft.setPower(power + correction);
+
+            frontRight.setPower(power - correction);
+            rearRight.setPower(power - correction);
+        }
+
+        brake(500);
+
+        logger.log(Logger.LoggerMode.DETAILED, "Moved ", averageEncoderValues() / COUNTS_PER_INCH, " inches");
+        return averageEncoderValues() / COUNTS_PER_INCH;
+    }
 
     /*
      * PID

@@ -21,6 +21,6 @@ public class Robot {
                 RevHubOrientationOnRobot.UsbFacingDirection.LEFT);
         drive = new MecanumDrive(opMode, logger, robotName, this.imu);
         touchSensor = new TouchSensorW(opMode.hardwareMap, "sensor_touch");
-        distanceSensor = new Distance2mW(opMode.hardwareMap, "sensor_distance");
+        distanceSensor = new Distance2mW(opMode.hardwareMap, "distance_sensor");
     }
 }
