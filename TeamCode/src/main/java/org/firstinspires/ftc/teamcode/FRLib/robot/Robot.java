@@ -16,11 +16,19 @@ public class Robot {
     public final Distance2mW distanceSensor;
 
     public Robot(LinearOpMode opMode, Logger logger, MecanumDrive.RobotName robotName) {
+        if (opMode.hardwareMap == null) {
+            throw new IllegalStateException("hardwareMap accessed before init()");
+        }
+
         imu = new IMUW(opMode.hardwareMap, "imu",
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
                 RevHubOrientationOnRobot.UsbFacingDirection.LEFT);
         drive = new MecanumDrive(opMode, logger, robotName, this.imu);
         touchSensor = new TouchSensorW(opMode.hardwareMap, "sensor_touch");
         distanceSensor = new Distance2mW(opMode.hardwareMap, "distance_sensor");
+    }
+
+    public Robot(LinearOpMode opMode, MecanumDrive.RobotName robotName) {
+        this(opMode, new Logger(Logger.LoggerMode.CRITICAL, opMode.telemetry), robotName);
     }
 }
