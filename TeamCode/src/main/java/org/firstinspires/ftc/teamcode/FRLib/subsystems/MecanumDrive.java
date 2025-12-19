@@ -23,22 +23,25 @@ public class MecanumDrive {
     private final LinearOpMode opMode;
     private final Logger logger;
     private final ElapsedTime runtime = new ElapsedTime();
-
+    public boolean requestStop = false;
     // Wheel motors
-    public final MotorW frontLeft, frontRight, rearLeft, rearRight;
-    public final MotorW[] motors;
+    public MotorW frontLeft;
+    public MotorW frontRight;
+    public MotorW rearLeft;
+    public  MotorW rearRight;
+    public  MotorW[] motors;
 
     // PID controller for turning and drive
     public final PIDController turnPid;
     public final PIDController drivePid;
 
     // Encoder and wheel constants
-    private static final float COUNTS_PER_REV = 537.7f;
+    public static final float COUNTS_PER_REV = 537.7f;
     private static final float GEAR_RATIO = 1.0f;
     private static final float WHEEL_DIAMETER_MM = 104.0f;
     private static final float COUNTS_PER_MM =
             (COUNTS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER_MM * (float)Math.PI);
-    private static final float COUNTS_PER_INCH = COUNTS_PER_MM * 25.4f;
+    public static final float COUNTS_PER_INCH = COUNTS_PER_MM * 25.4f;
 
     private final double OVERSHOOT_PER_INCH;
 
@@ -74,12 +77,18 @@ public class MecanumDrive {
         }
 
         // Initialize all 4 drive motors
-        frontLeft = createMotor("front_left_motor", DcMotor.Direction.REVERSE);
-        frontRight = createMotor("front_right_motor", DcMotor.Direction.FORWARD);
-        rearLeft = createMotor("back_left_motor", DcMotor.Direction.REVERSE);
-        rearRight = createMotor("back_right_motor", DcMotor.Direction.FORWARD);
-
-        motors = new MotorW[]{frontLeft, frontRight, rearLeft, rearRight};
+        try {
+            frontLeft = createMotor("front_left_motor", DcMotor.Direction.REVERSE);
+            frontRight = createMotor("front_right_motor", DcMotor.Direction.FORWARD);
+            rearLeft = createMotor("back_left_motor", DcMotor.Direction.REVERSE);
+            rearRight = createMotor("back_right_motor", DcMotor.Direction.FORWARD);
+            motors = new MotorW[]{frontLeft, frontRight, rearLeft, rearRight};
+        } catch (NullPointerException ex){
+            logger.logData(Logger.LoggerMode.STATUS,"Configurations Do Not Match",null);
+            logger.update();
+        } catch (Exception ex){
+            logger.logData(Logger.LoggerMode.STATUS,"Exception",ex.getMessage());
+        }
 
         // init in constructor since they need logger
         turnPid = new PIDController(0.2f, 0, 0.02f, logger);
@@ -128,7 +137,9 @@ public class MecanumDrive {
 
     /** Stop all motors immediately */
     public void stop() {
+        requestStop = true;
         setMotorPowers(0);
+        requestStop = false;
     }
 
     public void brake(long holdTimeMs) {
@@ -146,8 +157,7 @@ public class MecanumDrive {
 
         ElapsedTime timer = new ElapsedTime();
 
-        // Run lightweight PID loop
-        while (opMode.opModeIsActive() && timer.milliseconds() < holdTimeMs) {
+        while (opMode.opModeIsActive() && timer.milliseconds() < holdTimeMs && !requestStop) {
 
             // Compute position errors
             double flError = flTarget - frontLeft.getPosition();
@@ -252,7 +262,7 @@ public class MecanumDrive {
     }
 
     /** Strafe robot sideways */
-    private void strafe(float inches, float power, float timeout, boolean wait) {
+    public void strafe(float inches, float power, float timeout, boolean wait) {
         moveMotorsDistance(new MotorW[]{frontLeft, rearRight}, inches, power, timeout);
         moveMotorsDistance(new MotorW[]{frontRight, rearLeft}, -inches, power, timeout);
         if (wait) waitUntilDone(timeout);
@@ -316,7 +326,7 @@ public class MecanumDrive {
             m.runToPosition(targetCounts);
         }
 
-        while (opMode.opModeIsActive() && runtime.seconds() < timeout) {
+        while (opMode.opModeIsActive() && runtime.seconds() < timeout && !requestStop) {
             // check if any motor isn't finished
             boolean done = true;
             for (MotorW m : motors) {
@@ -346,7 +356,7 @@ public class MecanumDrive {
         brake(500);
     }
 
-    public void driveStraightDistanceSensor(@NonNull IMUW imu, float angleDegrees, float inches, float power, float timeout, Distance2mW sensor, double tooCloseInches) {
+    public boolean driveStraight(@NonNull IMUW imu, float angleDegrees, float inches, float power, float timeout, Distance2mW sensor, float thresholdInches) {
         double kP = 0.02; // proportional gain
         double startYaw = imu.getYaw();
         runtime.reset();
@@ -361,7 +371,7 @@ public class MecanumDrive {
             m.runToPosition(targetCounts);
         }
 
-        while (opMode.opModeIsActive() && sensor.getDistance(DistanceUnit.INCH) < tooCloseInches && runtime.seconds() < timeout) {
+        while (opMode.opModeIsActive() && runtime.seconds() < timeout && !requestStop && sensor.getDistanceInches() > thresholdInches) {
             // check if any motor isn't finished
             boolean done = true;
             for (MotorW m : motors) {
@@ -386,26 +396,14 @@ public class MecanumDrive {
 
             frontRight.setPower(power - correction);
             rearRight.setPower(power - correction);
+
+            opMode.telemetry.addData("Distance From Object", sensor.getDistance(DistanceUnit.INCH));
+            opMode.telemetry.addData("distance traveled",averageEncoderValues()/COUNTS_PER_INCH);
+            opMode.telemetry.update();
         }
-
         brake(500);
-    }
 
-    public void avoidObstacle(@NonNull IMUW imu, float inches, float power, Distance2mW sensor, double tooCloseInches){
-
-        double startCounts = frontLeft.getPosition();
-        double countsWhenDetect;
-        driveStraightDistanceSensor(imu,0,inches,power,100,sensor,tooCloseInches);
-        countsWhenDetect = frontLeft.getPosition();
-        double countsLeft = startCounts-countsWhenDetect;
-        turnDegreesPID(imu,90,0.2,0.5);
-        imu.resetYaw();
-        driveStraight(imu,0,15,power,100);
-        turnDegreesPID(imu,-90,0.2,0.5);
-        driveStraight(imu,0,(float)countsLeft/COUNTS_PER_INCH,power,100);
-        turnDegreesPID(imu,-90,0.2,0.5);
-        driveStraight(imu,0,15,power,100);
-        turnDegreesPID(imu,90,0.2,0.5);
+        if (sensor.getDistanceInches() > thresholdInches) {return false;} else return true;
 
     }
 

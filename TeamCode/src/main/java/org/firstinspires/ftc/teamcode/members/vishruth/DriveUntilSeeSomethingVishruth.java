@@ -26,6 +26,5 @@ public class DriveUntilSeeSomethingVishruth extends LinearOpMode {
         logger.logData(Logger.LoggerMode.STATUS,"Hardware","Initialized");
         logger.update();
         waitForStart();
-        robot.drive.driveStraightDistanceSensor(robot.imu,0,60,0.2f,100,robot.distanceSensor,10);
     }
 }
