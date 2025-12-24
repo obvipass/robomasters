@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.members.vishruth;
 
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import org.firstinspires.ftc.teamcode.FRLib.robot.Robot;
 import org.firstinspires.ftc.teamcode.FRLib.subsystems.MecanumDrive;
 import org.firstinspires.ftc.teamcode.utils.Logger;
-
+@TeleOp
 public class OurOpmodeTest extends OurOpmode{
     @Override
     protected void Loop() {

@@ -38,7 +38,7 @@ public class MecanumDrive {
     private static final float WHEEL_DIAMETER_MM = 104.0f;
     private static final float COUNTS_PER_MM =
             (COUNTS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER_MM * (float)Math.PI);
-    private static final float COUNTS_PER_INCH = COUNTS_PER_MM * 25.4f;
+    public static final float COUNTS_PER_INCH = COUNTS_PER_MM * 25.4f;
 
     private final double OVERSHOOT_PER_INCH;
 
@@ -252,7 +252,7 @@ public class MecanumDrive {
     }
 
     /** Strafe robot sideways */
-    private void strafe(float inches, float power, float timeout, boolean wait) {
+    public void strafe(float inches, float power, float timeout, boolean wait) {
         moveMotorsDistance(new MotorW[]{frontLeft, rearRight}, inches, power, timeout);
         moveMotorsDistance(new MotorW[]{frontRight, rearLeft}, -inches, power, timeout);
         if (wait) waitUntilDone(timeout);
