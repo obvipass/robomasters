@@ -37,8 +37,8 @@ public class Launcher {
      * velocity. Here we are setting the target, and minimum velocity that the launcher should run
      * at. The minimum velocity is a threshold for determining when to fire.
      */
-    final double LAUNCHER_TARGET_VELOCITY = 1530;
-    final double LAUNCHER_MIN_VELOCITY = 1515;
+    final double LAUNCHER_TARGET_VELOCITY = 1510;
+    final double LAUNCHER_MIN_VELOCITY = 1500;
 
     double launcherTargetVelocity = LAUNCHER_TARGET_VELOCITY;
     double launcherMinVelocity = LAUNCHER_MIN_VELOCITY;
