@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.FRLib.robot;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.utils.Logger;
 import org.firstinspires.ftc.teamcode.FRLib.hardware.Distance2mW;
@@ -16,16 +17,18 @@ public class Robot {
     public final Distance2mW distanceSensor;
 
     public Robot(LinearOpMode opMode, Logger logger, MecanumDrive.RobotName robotName) {
-        if (opMode.hardwareMap == null) {
+        HardwareMap hardwareMap = opMode.hardwareMap;
+
+        if (hardwareMap == null) {
             throw new IllegalStateException("hardwareMap accessed before init()");
         }
 
-        imu = new IMUW(opMode.hardwareMap, "imu",
+        imu = new IMUW(hardwareMap, "imu",
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
                 RevHubOrientationOnRobot.UsbFacingDirection.LEFT);
         drive = new MecanumDrive(opMode, logger, robotName, this.imu);
-        touchSensor = new TouchSensorW(opMode.hardwareMap, "sensor_touch");
-        distanceSensor = new Distance2mW(opMode.hardwareMap, "distance_sensor");
+        touchSensor = new TouchSensorW(hardwareMap, "sensor_touch");
+        distanceSensor = new Distance2mW(hardwareMap, "distance_sensor");
     }
 
     public Robot(LinearOpMode opMode, MecanumDrive.RobotName robotName) {
