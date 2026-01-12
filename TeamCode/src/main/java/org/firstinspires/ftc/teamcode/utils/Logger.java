@@ -24,12 +24,30 @@ public class Logger {
     private LoggerMode currentMode;
     private final Telemetry telemetry;
 
-    // persistent lines
+    // Persistent logs
     private final List<String> history = new ArrayList<>();
 
-    // overwriting key-values
+    // Overwriting key-value fields
     private final Map<String, Object> fields = new HashMap<>();
 
+    // Temporary logs with expiration
+    private static class TempLog {
+        final String message;
+        final long expireTime;
+
+        TempLog(String message, long durationMs) {
+            this.message = message;
+            this.expireTime = System.currentTimeMillis() + durationMs;
+        }
+
+        boolean isExpired() {
+            return System.currentTimeMillis() > expireTime;
+        }
+    }
+
+    private final List<TempLog> tempLogs = new ArrayList<>();
+
+    // Constructors
     public Logger(LoggerMode mode, Telemetry telemetry) {
         this.currentMode = mode;
         this.telemetry = telemetry;
@@ -44,8 +62,28 @@ public class Logger {
         this.currentMode = mode;
     }
 
-    // persistent log
-    public void log(LoggerMode level, Object... messages) {
+    // Persistent log
+    public void permLog(LoggerMode level, Object... messages) {
+        if (!currentMode.includes(level)) return;
+
+        StringBuilder sb = new StringBuilder();
+        for (Object msg : messages) sb.append(msg);
+
+        String finalMessage = sb.toString();
+        System.out.println(finalMessage);
+        history.add(finalMessage);
+    }
+
+    // Overwriting key-value log
+    public void logData(LoggerMode level, String field, Object data) {
+        if (!currentMode.includes(level)) return;
+
+        System.out.println(field + ": " + data);
+        fields.put(field, data);
+    }
+
+    // Temporary log with duration in milliseconds
+    public void tempLog(LoggerMode level, double durationSeconds, Object... messages) {
         if (!currentMode.includes(level)) return;
 
         StringBuilder sb = new StringBuilder();
@@ -54,34 +92,44 @@ public class Logger {
         String finalMessage = sb.toString();
         System.out.println(finalMessage);
 
-        // store permanently
-        history.add(finalMessage);
+        // convert seconds to milliseconds for expireTime
+        long durationMs = (long)(durationSeconds * 1000);
+        tempLogs.add(new TempLog(finalMessage, durationMs));
     }
 
-    // overwriting log
-    public void logData(LoggerMode level, String field, Object data) {
-        if (!currentMode.includes(level)) return;
 
-        System.out.println(field + ": " + data);
-
-        // store current value (overwrites old)
-        fields.put(field, data);
-    }
-
+    // Update telemetry display
     public void update() {
-        // full clear
         telemetry.clearAll();
 
-        // re-render persistent logs
+        // Remove expired temporary logs
+        tempLogs.removeIf(TempLog::isExpired);
+
+        // Render persistent logs at the top
         for (String line : history) {
             telemetry.addLine(line);
         }
 
-        // re-render overwriting fields
+        // Render overwriting data below perm logs
         for (Map.Entry<String, Object> e : fields.entrySet()) {
             telemetry.addData(e.getKey(), e.getValue());
         }
 
+        // Render temporary logs last
+        for (TempLog tl : tempLogs) {
+            telemetry.addLine(tl.message);
+        }
+
+
+        telemetry.update();
+    }
+
+    // Clear all logs
+    public void clear() {
+        history.clear();
+        fields.clear();
+        tempLogs.clear();
+        telemetry.clearAll();
         telemetry.update();
     }
 }

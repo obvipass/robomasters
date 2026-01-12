@@ -409,7 +409,7 @@ public class MecanumDrive {
 
         brake(500);
 
-        logger.log(Logger.LoggerMode.DETAILED, "Moved ", averageEncoderValues() / COUNTS_PER_INCH, " inches");
+        logger.tempLog(Logger.LoggerMode.DETAILED, 2, "Moved ", averageEncoderValues() / COUNTS_PER_INCH, " inches");
         return averageEncoderValues() / COUNTS_PER_INCH;
     }
 

@@ -27,7 +27,7 @@ public class PIDTest extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot = new Robot(this, logger, MecanumDrive.RobotName.KEVIN);
-        logger.log(Logger.LoggerMode.STATUS, "Init!");
+        logger.permLog(Logger.LoggerMode.STATUS, "Init!");
         logger.update();
         waitForStart();
         logger.logData(Logger.LoggerMode.STATUS, "Status", "running!");

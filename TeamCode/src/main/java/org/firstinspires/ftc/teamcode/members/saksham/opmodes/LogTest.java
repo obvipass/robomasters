@@ -24,7 +24,7 @@ public class LogTest extends LinearOpMode {
         if (opModeIsActive()) {
             robot.drive.turnDegreesPID(90, 1, 1);
             logger.update();
-            logger.log(Logger.LoggerMode.STATUS, "PID done");
+            logger.permLog(Logger.LoggerMode.STATUS, "PID done");
             logger.update();
             sleep(1000);
         }
