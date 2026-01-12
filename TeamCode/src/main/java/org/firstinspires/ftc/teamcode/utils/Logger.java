@@ -58,6 +58,11 @@ public class Logger {
         this.telemetry = telemetry;
     }
 
+    public Logger(Telemetry telemetry) {
+        this.currentMode = LoggerMode.CRITICAL;
+        this.telemetry = telemetry;
+    }
+
     public void setMode(LoggerMode mode) {
         this.currentMode = mode;
     }
@@ -79,6 +84,8 @@ public class Logger {
         if (!currentMode.includes(level)) return;
 
         System.out.println(field + ": " + data);
+
+        // store current value (overwrites old)
         fields.put(field, data);
     }
 
@@ -100,6 +107,7 @@ public class Logger {
 
     // Update telemetry display
     public void update() {
+        // full clear
         telemetry.clearAll();
 
         // Remove expired temporary logs

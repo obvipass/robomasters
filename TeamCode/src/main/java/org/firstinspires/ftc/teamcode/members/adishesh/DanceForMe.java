@@ -40,21 +40,26 @@ public class DanceForMe extends LinearOpMode {
         // forward 3, backward 3, clockwise 2, anticlockwise 2, left 3, right 3
 
         int count = 1;
-        while(opModeIsActive() && count <= 3) {
+        while(opModeIsActive() && count <= 1) {
 
-                move(0.3, 0, 0);
-                sleep(3000);
-                move(-0.3, 0, 0);
-                sleep(3000);
-                move(0, 0, 0.3);
-                sleep(3000);
-                move(0, 0, -0.3);
-                sleep(3000);
-                move(0, 0.3, 0);
-                sleep(3000);
-                move(0, -0.3, 0);
-                sleep(3000);
-                ++count;
+            move(0.1, 0, 0);
+            telemetry.addData("before first sleep", "");
+            telemetry.update();
+            sleep(3000);
+
+            move(0, 0, 0.015);
+            telemetry.addData("before second sleep", "");
+            telemetry.update();
+            sleep(10000);
+
+            move(0.05, 0.1, 0);
+            telemetry.addData("before third sleep", "");
+            telemetry.update();
+            sleep(3000);
+
+            move(0.1,0.04, 0);
+            sleep(3000);
+            ++count;
 
         }
 
