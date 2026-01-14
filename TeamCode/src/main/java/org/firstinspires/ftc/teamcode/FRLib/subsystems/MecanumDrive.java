@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -41,7 +42,7 @@ public class MecanumDrive {
     private static final float WHEEL_DIAMETER_MM = 104.0f;
     private static final float COUNTS_PER_MM =
             (COUNTS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER_MM * (float)Math.PI);
-    private static final float COUNTS_PER_INCH = COUNTS_PER_MM * 25.4f;
+    public static final float COUNTS_PER_INCH = COUNTS_PER_MM * 25.4f;
 
     private final double OVERSHOOT_PER_INCH;
 
@@ -78,10 +79,10 @@ public class MecanumDrive {
         }
 
         // Initialize all 4 drive motors
-        frontLeft = createMotor("front_left_motor", DcMotor.Direction.REVERSE);
-        frontRight = createMotor("front_right_motor", DcMotor.Direction.FORWARD);
-        rearLeft = createMotor("back_left_motor", DcMotor.Direction.REVERSE);
-        rearRight = createMotor("back_right_motor", DcMotor.Direction.FORWARD);
+        frontLeft = createMotor("front_left", DcMotor.Direction.FORWARD);
+        frontRight = createMotor("front_right", DcMotor.Direction.REVERSE);
+        rearLeft = createMotor("rear_left", DcMotor.Direction.FORWARD);
+        rearRight = createMotor("rear_right", DcMotor.Direction.REVERSE);
 
         motors = new MotorW[]{frontLeft, frontRight, rearLeft, rearRight};
 
@@ -357,7 +358,7 @@ public class MecanumDrive {
         brake(500);
     }
 
-    public void driveStraightUnlessSeeInches(@NonNull IMUW imu, float angleDegrees, float inches, float power, float timeout, Distance2mW sensor, double tooCloseInches) {
+    public void driveStraightDistanceSensor(@NonNull IMUW imu, float angleDegrees, float inches, float power, float timeout, Distance2mW sensor, double tooCloseInches) {
         double kP = 0.02; // proportional gain
         double startYaw = imu.getYaw();
         runtime.reset();
@@ -402,6 +403,23 @@ public class MecanumDrive {
         brake(500);
     }
 
+    public void avoidObstacle(@NonNull IMUW imu, float inches, float power, Distance2mW sensor, double tooCloseInches){
+
+        double startCounts = frontLeft.getPosition();
+        double countsWhenDetect;
+        driveStraightDistanceSensor(imu,0,inches,power,100,sensor,tooCloseInches);
+        countsWhenDetect = frontLeft.getPosition();
+        double countsLeft = startCounts-countsWhenDetect;
+        turnDegreesPID(90,0.2,0.5);
+        imu.resetYaw();
+        driveStraight(0,15,power,100);
+        turnDegreesPID(-90,0.2,0.5);
+        driveStraight(0,(float)countsLeft/COUNTS_PER_INCH,power,100);
+        turnDegreesPID(-90,0.2,0.5);
+        driveStraight(0,15,power,100);
+        turnDegreesPID(90,0.2,0.5);
+
+    }
 
     /*
      * PID

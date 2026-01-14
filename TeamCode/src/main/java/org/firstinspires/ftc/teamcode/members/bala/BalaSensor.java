@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
-@TeleOp
+@TeleOp(name = "Bala - Sensor")
 
 public class  BalaSensor  extends OpMode {
 

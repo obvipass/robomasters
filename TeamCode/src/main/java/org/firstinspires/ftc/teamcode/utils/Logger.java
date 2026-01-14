@@ -35,6 +35,11 @@ public class Logger {
         this.telemetry = telemetry;
     }
 
+    public Logger(Telemetry telemetry) {
+        this.currentMode = LoggerMode.CRITICAL;
+        this.telemetry = telemetry;
+    }
+
     public void setMode(LoggerMode mode) {
         this.currentMode = mode;
     }
@@ -56,6 +61,15 @@ public class Logger {
     // overwriting log
     public void logData(LoggerMode level, String field, Object data) {
         if (!currentMode.includes(level)) return;
+
+        System.out.println(field + ": " + data);
+
+        // store current value (overwrites old)
+        fields.put(field, data);
+    }
+
+    public void logData(String field, Object data) {
+        if (!currentMode.includes(LoggerMode.CRITICAL)) return;
 
         System.out.println(field + ": " + data);
 
