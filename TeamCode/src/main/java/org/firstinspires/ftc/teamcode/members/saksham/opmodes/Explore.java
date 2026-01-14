@@ -2,12 +2,14 @@ package org.firstinspires.ftc.teamcode.members.saksham.opmodes;
 
 import static java.lang.Math.sqrt;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.FRLib.robot.Robot;
 import org.firstinspires.ftc.teamcode.FRLib.subsystems.MecanumDrive;
 import org.firstinspires.ftc.teamcode.utils.Logger;
 
+@Autonomous
 public class Explore extends LinearOpMode {
     Logger logger = new Logger(Logger.LoggerMode.CRITICAL, telemetry);
     double rightDistance;
@@ -42,7 +44,7 @@ public class Explore extends LinearOpMode {
             robot.drive.turnDegreesPID(90, power, 0.1);
 
             // go all the way right
-            robot.drive.driveDistance(MecanumDrive.Direction.RIGHT, rightDistance - freeRotateSpaceInches, power, rightDistance, false);
+            robot.drive.driveDistance(MecanumDrive.Direction.RIGHT, rightDistance - freeRotateSpaceInches, power, false);
             // constantly check for opening
             while (robot.drive.isAnyMotorBusy()) {
                 if (robot.distanceSensor.getDistanceInches() > freeRotateSpaceInches) {
@@ -52,7 +54,7 @@ public class Explore extends LinearOpMode {
             }
 
             // we know wall on right side if at this point, so go back left
-            robot.drive.driveDistance(MecanumDrive.Direction.LEFT, leftDistance + rightDistance - freeRotateSpaceInches, power, leftDistance + rightDistance, true);
+            robot.drive.driveDistance(MecanumDrive.Direction.LEFT, leftDistance + rightDistance - freeRotateSpaceInches, power, true);
             // constantly check for opening
             while (robot.drive.isAnyMotorBusy()) {
                 if (robot.distanceSensor.getDistanceInches() > freeRotateSpaceInches) {
