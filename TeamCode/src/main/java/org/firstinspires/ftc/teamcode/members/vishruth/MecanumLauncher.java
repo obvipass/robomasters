@@ -8,10 +8,11 @@ import org.firstinspires.ftc.teamcode.FRLib.hardware.IMUW;
 import org.firstinspires.ftc.teamcode.FRLib.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.FRLib.subsystems.MecanumDrive;
 import org.firstinspires.ftc.teamcode.utils.Logger;
-import org.firstinspires.ftc.teamcode.utils.VelocityProfiler4Stream;
+import org.firstinspires.ftc.teamcode.utils.OurOpmode;
+import org.firstinspires.ftc.teamcode.FRLib.subsystems.VelocityProfiler4Stream;
 
 @TeleOp
-public class MecanumLauncher extends OurOpmode{
+public class MecanumLauncher extends OurOpmode {
     Launcher launcher;
     MecanumDrive drive;
     IMUW imu;

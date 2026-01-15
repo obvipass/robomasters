@@ -28,7 +28,7 @@ public class Logger {
     private final List<String> history = new ArrayList<>();
 
     // Overwriting key-value fields
-    private final Map<String, Object> fields = new HashMap<>();
+    private final Map<String, Object> fields = new LinkedHashMap<>();
 
     // Temporary logs with expiration
     private static class TempLog {
@@ -77,6 +77,15 @@ public class Logger {
     // Overwriting key-value log
     public void logData(LoggerMode level, String field, Object data) {
         if (!currentMode.includes(level)) return;
+
+        System.out.println(field + ": " + data);
+
+        // store current value (overwrites old)
+        fields.put(field, data);
+    }
+
+    public void logData(String field, Object data) {
+        if (!currentMode.includes(LoggerMode.STATUS)) return;
 
         System.out.println(field + ": " + data);
 
