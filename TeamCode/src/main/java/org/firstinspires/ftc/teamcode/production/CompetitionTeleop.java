@@ -11,7 +11,7 @@ public class CompetitionTeleop extends OurOpmode {
     // init variables
     DecodeRobot bot;
     double power;
-    VelocityProfilerDynamic profiler = new VelocityProfilerDynamic(0.075);
+    VelocityProfilerDynamic profiler = new VelocityProfilerDynamic(0.1);
     // made 2 different possibilities for what the driver wants, Field Relative Or Without Field Relative, which is normal.
 
     enum DriverPreference {
@@ -21,17 +21,13 @@ public class CompetitionTeleop extends OurOpmode {
     double fastPower = 0.82;
     double normalPower = 0.5;
 
-    DriverPreference preference = DriverPreference.NORMAL;
+    DriverPreference preference = DriverPreference.FIELD_RELATIVE;
     @Override
     protected void Loop() {
         // this if the leftBumper is constantly pressed, then do the power 0.82, otherwise, 0.5
         power = gamepad1.left_bumper ? fastPower : normalPower;
         // if the leftBumper was pressed, it checks what state the driver preference is and converts it to the other one
-        if (gamepad2.leftBumperWasPressed()) {
-            preference = (preference == DriverPreference.NORMAL)
-                    ? DriverPreference.FIELD_RELATIVE
-                    : DriverPreference.NORMAL;
-        }
+
 
 
         driveBasedOnPreferences();
