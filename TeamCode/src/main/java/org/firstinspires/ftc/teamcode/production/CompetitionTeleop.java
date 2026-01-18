@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.production;
 
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.FRLib.robot.DecodeRobot;
 import org.firstinspires.ftc.teamcode.FRLib.subsystems.VelocityProfilerDynamic;
 import org.firstinspires.ftc.teamcode.utils.Logger;
 import org.firstinspires.ftc.teamcode.utils.OurOpmode;
-
+@TeleOp
 public class CompetitionTeleop extends OurOpmode {
     // init variables
     DecodeRobot bot;
