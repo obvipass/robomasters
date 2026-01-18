@@ -44,6 +44,8 @@ public class MecanumDrive {
             (COUNTS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER_MM * (float)Math.PI);
     public static final float COUNTS_PER_INCH = COUNTS_PER_MM * 25.4f;
 
+    public final double TIMEOUT_SECONDS = 30;
+
     private final double OVERSHOOT_PER_INCH;
 
     /** Cardinal directions for movement convenience */
@@ -237,38 +239,37 @@ public class MecanumDrive {
      * @param dir direction to move
      * @param inches distance to travel
      * @param power speed (0-1)
-     * @param timeout maximum time to attempt movement
      * @param wait whether to wait for completion before returning
      */
-    public void driveDistance(Direction dir, double inches, double power, double timeout, boolean wait) {
+    public void driveDistance(Direction dir, double inches, double power, boolean wait) {
         switch (dir) {
             case FORWARD:
-                driveDistanceTank(inches, inches, power, timeout, wait);
+                driveDistanceTank(inches, inches, power, wait);
                 break;
             case BACKWARD:
-                driveDistanceTank(-inches, -inches, power, timeout, wait);
+                driveDistanceTank(-inches, -inches, power, wait);
                 break;
             case RIGHT:
-                strafe(inches, power, timeout, wait);
+                strafe(inches, power, wait);
                 break;
             case LEFT:
-                strafe(-inches, power, timeout, wait);
+                strafe(-inches, power, wait);
                 break;
         }
     }
 
     /** Drive left and right sides independently (tank style) */
-    public void driveDistanceTank(double leftInches, double rightInches, double power, double timeout, boolean wait) {
-        moveMotorsDistance(new MotorW[]{frontLeft, rearLeft}, leftInches, power, timeout);
-        moveMotorsDistance(new MotorW[]{frontRight, rearRight}, rightInches, power, timeout);
-        if (wait) waitUntilDone(timeout);
+    public void driveDistanceTank(double leftInches, double rightInches, double power, boolean wait) {
+        moveMotorsDistance(new MotorW[]{frontLeft, rearLeft}, leftInches, power, TIMEOUT_SECONDS);
+        moveMotorsDistance(new MotorW[]{frontRight, rearRight}, rightInches, power, TIMEOUT_SECONDS);
+        if (wait) waitUntilDone(TIMEOUT_SECONDS);
     }
 
     /** Strafe robot sideways */
-    private void strafe(double inches, double power, double timeout, boolean wait) {
-        moveMotorsDistance(new MotorW[]{frontLeft, rearRight}, inches, power, timeout);
-        moveMotorsDistance(new MotorW[]{frontRight, rearLeft}, -inches, power, timeout);
-        if (wait) waitUntilDone(timeout);
+    private void strafe(double inches, double power, boolean wait) {
+        moveMotorsDistance(new MotorW[]{frontLeft, rearRight}, inches, power, TIMEOUT_SECONDS);
+        moveMotorsDistance(new MotorW[]{frontRight, rearLeft}, -inches, power, TIMEOUT_SECONDS);
+        if (wait) waitUntilDone(TIMEOUT_SECONDS);
     }
 
     /**
@@ -311,9 +312,8 @@ public class MecanumDrive {
      * @param angleDegrees target heading in degrees (0 = forward)
      * @param inches distance to travel
      * @param power base motor power (0-1)
-     * @param timeout max time to attempt movement
      */
-    public void driveStraight(float angleDegrees, float inches, float power, float timeout) {
+    public void driveStraight(float angleDegrees, float inches, float power) {
         double kP = 0.02; // proportional gain
         double startYaw = imu.getYaw();
         runtime.reset();
@@ -328,7 +328,7 @@ public class MecanumDrive {
             m.runToPosition(targetCounts);
         }
 
-        while (opMode.opModeIsActive() && runtime.seconds() < timeout) {
+        while (opMode.opModeIsActive() && runtime.seconds() < TIMEOUT_SECONDS) {
             // check if any motor isn't finished
             boolean done = true;
             for (MotorW m : motors) {
@@ -358,7 +358,7 @@ public class MecanumDrive {
         brake(500);
     }
 
-    public void driveStraightDistanceSensor(@NonNull IMUW imu, float angleDegrees, float inches, float power, float timeout, Distance2mW sensor, double tooCloseInches) {
+    public void driveStraightDistanceSensor(@NonNull IMUW imu, float angleDegrees, float inches, float power, Distance2mW sensor, double tooCloseInches) {
         double kP = 0.02; // proportional gain
         double startYaw = imu.getYaw();
         runtime.reset();
@@ -373,7 +373,7 @@ public class MecanumDrive {
             m.runToPosition(targetCounts);
         }
 
-        while (opMode.opModeIsActive() && sensor.getDistance(DistanceUnit.INCH) < tooCloseInches && runtime.seconds() < timeout) {
+        while (opMode.opModeIsActive() && sensor.getDistance(DistanceUnit.INCH) < tooCloseInches && runtime.seconds() < TIMEOUT_SECONDS) {
             // check if any motor isn't finished
             boolean done = true;
             for (MotorW m : motors) {
@@ -401,24 +401,6 @@ public class MecanumDrive {
         }
 
         brake(500);
-    }
-
-    public void avoidObstacle(@NonNull IMUW imu, float inches, float power, Distance2mW sensor, double tooCloseInches){
-
-        double startCounts = frontLeft.getPosition();
-        double countsWhenDetect;
-        driveStraightDistanceSensor(imu,0,inches,power,100,sensor,tooCloseInches);
-        countsWhenDetect = frontLeft.getPosition();
-        double countsLeft = startCounts-countsWhenDetect;
-        turnDegreesPID(90,0.2,0.5);
-        imu.resetYaw();
-        driveStraight(0,15,power,100);
-        turnDegreesPID(-90,0.2,0.5);
-        driveStraight(0,(float)countsLeft/COUNTS_PER_INCH,power,100);
-        turnDegreesPID(-90,0.2,0.5);
-        driveStraight(0,15,power,100);
-        turnDegreesPID(90,0.2,0.5);
-
     }
 
     /*

@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.FRLib.robot.Robot;
 
 public abstract class  OurOpmode extends LinearOpMode {
-    Robot robot;
+    protected Robot robot;
     protected Logger logger;
     @Override
     public final void runOpMode() throws InterruptedException {
