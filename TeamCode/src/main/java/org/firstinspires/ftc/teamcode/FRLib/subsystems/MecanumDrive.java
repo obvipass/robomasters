@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.FRLib.hardware.Distance2mW;
 import org.firstinspires.ftc.teamcode.utils.Logger;
 import org.firstinspires.ftc.teamcode.FRLib.hardware.MotorW;
@@ -42,9 +44,9 @@ public class MecanumDrive {
             (COUNTS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER_MM * (float)Math.PI);
     public static final float COUNTS_PER_INCH = COUNTS_PER_MM * 25.4f;
 
-    private final double TIMEOUT_SECONDS = 30;
+    public final double TIMEOUT_SECONDS = 30;
+
     private final double OVERSHOOT_PER_INCH;
-    private final double DISTANCE_SENSOR_GAP_INCHES = 7.5;
 
     /** Cardinal directions for movement convenience */
     public enum Direction {
@@ -258,15 +260,15 @@ public class MecanumDrive {
 
     /** Drive left and right sides independently (tank style) */
     public void driveDistanceTank(double leftInches, double rightInches, double power, boolean wait) {
-        moveMotorsDistance(new MotorW[]{frontLeft, rearLeft}, leftInches, power);
-        moveMotorsDistance(new MotorW[]{frontRight, rearRight}, rightInches, power);
+        moveMotorsDistance(new MotorW[]{frontLeft, rearLeft}, leftInches, power, TIMEOUT_SECONDS);
+        moveMotorsDistance(new MotorW[]{frontRight, rearRight}, rightInches, power, TIMEOUT_SECONDS);
         if (wait) waitUntilDone(TIMEOUT_SECONDS);
     }
 
     /** Strafe robot sideways */
     private void strafe(double inches, double power, boolean wait) {
-        moveMotorsDistance(new MotorW[]{frontLeft, rearRight}, inches, power);
-        moveMotorsDistance(new MotorW[]{frontRight, rearLeft}, -inches, power);
+        moveMotorsDistance(new MotorW[]{frontLeft, rearRight}, inches, power, TIMEOUT_SECONDS);
+        moveMotorsDistance(new MotorW[]{frontRight, rearLeft}, -inches, power, TIMEOUT_SECONDS);
         if (wait) waitUntilDone(TIMEOUT_SECONDS);
     }
 
@@ -275,8 +277,9 @@ public class MecanumDrive {
      * @param motors array of motors to move
      * @param inches distance in inches
      * @param power motor power (0-1)
+     * @param timeout max time to attempt movement
      */
-    private void moveMotorsDistance(@NonNull MotorW[] motors, double inches, double power) {
+    private void moveMotorsDistance(@NonNull MotorW[] motors, double inches, double power, double timeout) {
         if (!opMode.opModeIsActive()) return;
 
         int targetCounts = (int) (inches * COUNTS_PER_INCH);
@@ -310,7 +313,7 @@ public class MecanumDrive {
      * @param inches distance to travel
      * @param power base motor power (0-1)
      */
-    public void driveStraight(double angleDegrees, double inches, double power) {
+    public void driveStraight(float angleDegrees, float inches, float power) {
         double kP = 0.02; // proportional gain
         double startYaw = imu.getYaw();
         runtime.reset();
@@ -355,23 +358,13 @@ public class MecanumDrive {
         brake(500);
     }
 
-    /**
-     * Drive straight at a specified heading for a given distance using proportional control.
-     * @param targetInches distance to travel
-     * @param stopDistanceInches how far from FRONT of robot (NOT from sensor) to
-     * @param sensor the distance sensor to use, should be robot's front sensor
-     * @param power base motor power (0-1)
-     */
-    public double driveStraightUntilObstacle(double targetInches, double stopDistanceInches, Distance2mW sensor, double power) {
+    public void driveStraightDistanceSensor(@NonNull IMUW imu, float angleDegrees, float inches, float power, Distance2mW sensor, double tooCloseInches) {
         double kP = 0.02; // proportional gain
         double startYaw = imu.getYaw();
-
-        stopDistanceInches += DISTANCE_SENSOR_GAP_INCHES;
-
         runtime.reset();
 
-        int targetCounts = (int)(Math.abs(targetInches) * COUNTS_PER_INCH);
-        double direction = Math.signum(targetInches); // 1 for forward, -1 for backward
+        int targetCounts = (int)(Math.abs(inches) * COUNTS_PER_INCH);
+        double direction = Math.signum(inches); // 1 for forward, -1 for backward
 
         // Reset encoders, run to position
         for (MotorW m : motors) {
@@ -380,7 +373,7 @@ public class MecanumDrive {
             m.runToPosition(targetCounts);
         }
 
-        while (opMode.opModeIsActive() && sensor.getDistanceInches() > stopDistanceInches && runtime.seconds() < TIMEOUT_SECONDS) {
+        while (opMode.opModeIsActive() && sensor.getDistance(DistanceUnit.INCH) < tooCloseInches && runtime.seconds() < TIMEOUT_SECONDS) {
             // check if any motor isn't finished
             boolean done = true;
             for (MotorW m : motors) {
@@ -394,7 +387,7 @@ public class MecanumDrive {
             if (done) break;
 
             double currentYaw = imu.getYaw() - startYaw;
-            double error = 0 - currentYaw;
+            double error = angleDegrees - currentYaw;
 
             error = AngleUnit.normalizeDegrees(error);
 
@@ -408,9 +401,6 @@ public class MecanumDrive {
         }
 
         brake(500);
-
-        logger.tempLog(Logger.LoggerMode.DETAILED, 2, "Moved ", averageEncoderValues() / COUNTS_PER_INCH, " inches");
-        return averageEncoderValues() / COUNTS_PER_INCH;
     }
 
     /*

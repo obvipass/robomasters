@@ -1,13 +1,12 @@
-package org.firstinspires.ftc.teamcode.members.vishruth;
+package org.firstinspires.ftc.teamcode.utils;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.FRLib.robot.Robot;
-import org.firstinspires.ftc.teamcode.utils.Logger;
 
 public abstract class  OurOpmode extends LinearOpMode {
-    Robot robot;
-    Logger logger;
+    protected Robot robot;
+    protected Logger logger;
     @Override
     public final void runOpMode() throws InterruptedException {
         initialize();

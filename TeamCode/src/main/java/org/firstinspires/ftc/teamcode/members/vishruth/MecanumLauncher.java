@@ -8,10 +8,11 @@ import org.firstinspires.ftc.teamcode.FRLib.hardware.IMUW;
 import org.firstinspires.ftc.teamcode.FRLib.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.FRLib.subsystems.MecanumDrive;
 import org.firstinspires.ftc.teamcode.utils.Logger;
-import org.firstinspires.ftc.teamcode.utils.VelocityProfiler4Stream;
+import org.firstinspires.ftc.teamcode.utils.OurOpmode;
+import org.firstinspires.ftc.teamcode.FRLib.subsystems.VelocityProfiler4Stream;
 
 @TeleOp
-public class MecanumLauncher extends OurOpmode{
+public class MecanumLauncher extends OurOpmode {
     Launcher launcher;
     MecanumDrive drive;
     IMUW imu;
@@ -70,8 +71,9 @@ public class MecanumLauncher extends OurOpmode{
     protected void initialize() {
         logger = new Logger(telemetry);
         launcher = new Launcher(this);
-        drive = new MecanumDrive(this,logger, MecanumDrive.RobotName.BOB);
         imu = new IMUW(hardwareMap,"imu", RevHubOrientationOnRobot.LogoFacingDirection.RIGHT, RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD);
+        drive = new MecanumDrive(this,logger, MecanumDrive.RobotName.BOB,imu);
+
         drive.setMotorZeroPowerBehaviors(DcMotor.ZeroPowerBehavior.BRAKE);
         imu.resetYaw();
         logger.logData(Logger.LoggerMode.CRITICAL,"Status","Init");

@@ -1,25 +1,19 @@
-package org.firstinspires.ftc.teamcode.members.vishruth;
+package org.firstinspires.ftc.teamcode.production;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.FRLib.hardware.IMUW;
-import org.firstinspires.ftc.teamcode.FRLib.subsystems.Launcher;
-import org.firstinspires.ftc.teamcode.FRLib.subsystems.MecanumDrive;
+import org.firstinspires.ftc.teamcode.FRLib.robot.DecodeRobot;
+import org.firstinspires.ftc.teamcode.FRLib.subsystems.VelocityProfilerDynamic;
 import org.firstinspires.ftc.teamcode.utils.Logger;
 import org.firstinspires.ftc.teamcode.utils.OurOpmode;
-import org.firstinspires.ftc.teamcode.FRLib.subsystems.VelocityProfilerDynamic;
 
-@TeleOp
-public class MecanumLauncherV2 extends OurOpmode {
+public class CompetitionTeleop extends OurOpmode {
     // init variables
-    Launcher launcher;
-    MecanumDrive drive;
-    IMUW imu;
+    DecodeRobot bot;
     double power;
     VelocityProfilerDynamic profiler = new VelocityProfilerDynamic(0.075);
-    // made 2 different possibilities for what the driver wants, Field Relative Or Whithout Field Relative, which is normal.
+    // made 2 different possibilities for what the driver wants, Field Relative Or Without Field Relative, which is normal.
+
     enum DriverPreference {
         FIELD_RELATIVE,
         NORMAL
@@ -30,7 +24,7 @@ public class MecanumLauncherV2 extends OurOpmode {
     DriverPreference preference = DriverPreference.NORMAL;
     @Override
     protected void Loop() {
-        // this if the rightBumper is constantly pressed, then do the power o.82, otherwise, 0.5
+        // this if the leftBumper is constantly pressed, then do the power 0.82, otherwise, 0.5
         power = gamepad1.left_bumper ? fastPower : normalPower;
         // if the leftBumper was pressed, it checks what state the driver preference is and converts it to the other one
         if (gamepad2.leftBumperWasPressed()) {
@@ -43,19 +37,19 @@ public class MecanumLauncherV2 extends OurOpmode {
         driveBasedOnPreferences();
 
 
-        launcher.launchTeleOp(gamepad1.rightBumperWasPressed());
-        
+        bot.launcher.launchTeleOp(gamepad1.rightBumperWasPressed());
+
         if (gamepad1.bWasPressed()){
-            launcher.stopFlywheel();
+            bot.launcher.stopFlywheel();
             logger.logData(Logger.LoggerMode.CRITICAL,"Flywheel","Stopped");
         }
 
         if (gamepad2.yWasPressed()){
-            imu.resetYaw();
+            bot.imu.resetYaw();
         }
 
         if (gamepad1.yWasPressed()){
-            launcher.spinUpFlywheel();
+            bot.launcher.spinUpFlywheel();
             logger.logData(Logger.LoggerMode.CRITICAL,"Flywheel","Spinning Up");
         }
 
@@ -65,15 +59,15 @@ public class MecanumLauncherV2 extends OurOpmode {
     private void driveBasedOnPreferences() {
         // this says if the preference is field relative, the drive field relative, if the preference is normal, drive normal
         switch  (preference) {
-            case FIELD_RELATIVE:  drive.driveVectorField(
+            case FIELD_RELATIVE:  bot.drive.driveVectorField(
                     profiler.velocityProfile("Left Stick Y", -gamepad1.left_stick_y),
                     profiler.velocityProfile("Left Stick X", gamepad1.left_stick_x),
                     profiler.velocityProfile("Right Stick X", -gamepad1.right_stick_x),
-                    power, imu
+                    power, bot.imu
             ); break;
 
 
-            case NORMAL : drive.driveVector(
+            case NORMAL : bot.drive.driveVector(
                     profiler.velocityProfile("Left Stick Y", -gamepad1.left_stick_y),
                     profiler.velocityProfile("Left Stick X", gamepad1.left_stick_x),
                     profiler.velocityProfile("Right Stick X", -gamepad1.right_stick_x),
@@ -81,36 +75,39 @@ public class MecanumLauncherV2 extends OurOpmode {
         }
     }
 
+    private void logInstructions(){
+        logger.permLog(Logger.LoggerMode.STATUS,"Press Gamepad 1 LeftBumper for increased speed");
+        logger.permLog(Logger.LoggerMode.STATUS,"Press Gamepad 1 B to stop flywheel");
+        logger.permLog(Logger.LoggerMode.STATUS,"Press Gamepad 1 RightBumper to shoot");
+        logger.permLog(Logger.LoggerMode.STATUS,"Press Gamepad 1 Y to start flywheel");
+        logger.permLog(Logger.LoggerMode.STATUS,"Press Gamepad 2 Y to reset yaw");
+        logger.permLog(Logger.LoggerMode.STATUS,"Press Gamepad 2 LeftBumper toggle between Normal and fieldRelative");
+        logger.update();
+    }
 
     private void logVariables() {
         // logs all important information the driver needs
-        logger.logData(Logger.LoggerMode.STATUS,"FlyWheelVelocity",launcher.getLauncher().getVelocity());
-        logger.logData(Logger.LoggerMode.STATUS,"Driver Preference",preference);
-        logger.logData(Logger.LoggerMode.STATUS,"IMU Yaw", imu.getYaw());
-        logger.logData(Logger.LoggerMode.STATUS,"TargetVelocity",launcher.getLauncherTargetVelocity());
-        logger.logData(Logger.LoggerMode.STATUS,"Launch-state",launcher.getLaunchStatesT());
-        logger.logData(Logger.LoggerMode.STATUS,"FrontLeft",drive.frontLeft.getRawMotor().getPower());
-        logger.logData(Logger.LoggerMode.STATUS,"FrontRight",drive.frontRight.getRawMotor().getPower());
-        logger.logData(Logger.LoggerMode.STATUS,"RearLeft",drive.rearLeft.getRawMotor().getPower());
-        logger.logData(Logger.LoggerMode.STATUS,"RearRight",drive.rearRight.getRawMotor().getPower());
+        logger.logData(Logger.LoggerMode.STATUS,"FlyWheelVelocity",bot.launcher.getLauncher().getVelocity());
+        logger.logData("TargetVelocity",bot.launcher.getLauncherTargetVelocity());
+        logger.logData("Driver Preference",preference);
+        logger.logData("IMU Yaw", bot.imu.getYaw());
+        logger.logData(Logger.LoggerMode.STATUS,"Launch-state",bot.launcher.getLaunchStatesT());
         logger.update();
 
     }
 
     @Override
     protected void initialize() {
-        // profiler.addInput means when you call the velocityprofiling method, these are the appropriate names for the inputs that the profiler will recognise
+        // profiler.addInput means when you call the velocity-profiling method, these are the appropriate names for the inputs that the profiler will recognise
         profiler.addInput("Left Stick Y");
         profiler.addInput("Left Stick X");
         profiler.addInput("Right Stick X");
         //initializing everything else
         logger = new Logger(telemetry);
-        launcher = new Launcher(this);
-        drive = new MecanumDrive(this,logger, MecanumDrive.RobotName.BOB,imu);
-        imu = new IMUW(hardwareMap,"imu", RevHubOrientationOnRobot.LogoFacingDirection.RIGHT, RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD);
-        drive.setMotorZeroPowerBehaviors(DcMotor.ZeroPowerBehavior.BRAKE);
-        imu.resetYaw();
+        bot = new DecodeRobot(this,logger);
+        bot.imu.resetYaw();
+        bot.drive.setMotorZeroPowerBehaviors(DcMotor.ZeroPowerBehavior.BRAKE);
         logger.logData(Logger.LoggerMode.CRITICAL,"Status","Init");
-        logger.update();
+        logInstructions();
     }
 }

@@ -1,17 +1,15 @@
 package org.firstinspires.ftc.teamcode.members.vishruth;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorGoBildaPinpoint;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.FRLib.robot.Robot;
 import org.firstinspires.ftc.teamcode.FRLib.subsystems.MecanumDrive;
 import org.firstinspires.ftc.teamcode.utils.Logger;
+import org.firstinspires.ftc.teamcode.utils.OurOpmode;
+
 //@TeleOp
 public class OdometryFun extends OurOpmode {
     //         *  Left of the center is a positive number, right of center is a negative number.
@@ -54,6 +52,6 @@ public class OdometryFun extends OurOpmode {
         double yOffset = object.position.getY(DistanceUnit.INCH) - robotPosition.getY(DistanceUnit.INCH);
 
         double angle = Math.toDegrees(Math.atan2(yOffset,xOffset));
-        robot.drive.turnDegreesPID(robot.imu,angle-robotPosition.getHeading(AngleUnit.DEGREES),0.2,1);
+        robot.drive.turnDegreesPID(angle-robotPosition.getHeading(AngleUnit.DEGREES),0.2,1);
     }
 }
