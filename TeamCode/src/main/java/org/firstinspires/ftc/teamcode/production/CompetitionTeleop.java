@@ -78,7 +78,6 @@ public class CompetitionTeleop extends OurOpmode {
         logger.permLog(Logger.LoggerMode.STATUS,"Press Gamepad 1 RightBumper to shoot");
         logger.permLog(Logger.LoggerMode.STATUS,"Press Gamepad 1 Y to start flywheel");
         logger.permLog(Logger.LoggerMode.STATUS,"Press Gamepad 2 Y to reset yaw");
-        logger.permLog(Logger.LoggerMode.STATUS,"Press Gamepad 2 LeftBumper toggle between Normal and fieldRelative");
         logger.update();
     }
 
