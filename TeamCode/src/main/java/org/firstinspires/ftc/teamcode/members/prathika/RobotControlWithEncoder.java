@@ -36,7 +36,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Driver Station OpMode list, or add a @Disabled annotation to prevent this OpMode from being
  * added to the Driver Station.
  */
-@Autonomous
+// @Autonomous
 
 public class RobotControlWithEncoder extends LinearOpMode {
 

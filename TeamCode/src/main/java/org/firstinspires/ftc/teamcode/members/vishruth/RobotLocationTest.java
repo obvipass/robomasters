@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.members.vishruth;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp
+// @TeleOp
 public class RobotLocationTest extends OpMode {
     RobotLocation location;
     @Override

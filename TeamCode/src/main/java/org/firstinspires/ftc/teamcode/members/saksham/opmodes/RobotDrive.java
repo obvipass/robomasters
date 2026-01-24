@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.FRLib.robot.Robot;
 import org.firstinspires.ftc.teamcode.FRLib.subsystems.MecanumDrive;
 import org.firstinspires.ftc.teamcode.utils.Logger;
 
-@TeleOp
+// @TeleOp
 public class RobotDrive extends LinearOpMode {
     Logger logger = new Logger(telemetry);
     @Override

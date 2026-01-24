@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-@TeleOp
+// @TeleOp
 public class CrazyButton extends LinearOpMode {
     @Override
     public void runOpMode() {

@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@Autonomous(name = "IS - IMU Turn 90° (Fixed)", group = "ISDrive")
+// @Autonomous(name = "IS - IMU Turn 90° (Fixed)", group = "ISDrive")
 public class IMUTurn90Easy extends LinearOpMode {
 
     // === YOUR FOUR DRIVE MOTORS ===

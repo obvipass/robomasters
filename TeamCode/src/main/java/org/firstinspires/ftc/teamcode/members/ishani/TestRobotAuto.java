@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.members.ishani;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name = "IS - Test Robot Class (Auto)", group = "ISDrive")
+// @Autonomous(name = "IS - Test Robot Class (Auto)", group = "ISDrive")
 public class TestRobotAuto extends LinearOpMode {
 
     private Robot robot;  // ← your magic robot!

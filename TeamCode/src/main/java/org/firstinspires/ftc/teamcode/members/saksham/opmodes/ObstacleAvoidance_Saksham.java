@@ -8,7 +8,7 @@
 //import org.firstinspires.ftc.teamcode.utils.Logger;
 //import org.slf4j.LoggerFactory;
 //
-//@Autonomous
+//// @Autonomous
 //public class ObstacleAvoidance_Saksham extends LinearOpMode {
 //    Logger logger = new Logger(telemetry);
 //    double distanceTraveled = 0;

@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous(name = "IS - Distance Sensor Beginner", group = "ISSensor")
+// @Autonomous(name = "IS - Distance Sensor Beginner", group = "ISSensor")
 public class DistanceSensorBeginner extends LinearOpMode {
 
     // ←←← Name this EXACTLY what you named it in the phone config!

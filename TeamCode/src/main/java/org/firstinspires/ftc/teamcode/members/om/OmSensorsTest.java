@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous
+// @Autonomous
 public class OmSensorsTest extends OpMode {
 
     TouchSensor touchSensor;

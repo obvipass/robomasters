@@ -5,7 +5,7 @@ import android.graphics.Color;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-@TeleOp
+// @TeleOp
 public class ColorSensorVishruth extends LinearOpMode {
     NormalizedColorSensor colorSensor;
     Color colors;

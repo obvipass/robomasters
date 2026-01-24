@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp
+// @TeleOp
 public class MoveByInches extends LinearOpMode {
     private DcMotor frontLeftDrive = null;
     private DcMotor backLeftDrive = null;

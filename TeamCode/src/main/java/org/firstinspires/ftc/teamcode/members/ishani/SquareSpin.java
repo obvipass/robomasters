@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@Autonomous(name = "IS - Square Spin", group = "ISDrive")
+// @Autonomous(name = "IS - Square Spin", group = "ISDrive")
 public class SquareSpin extends LinearOpMode {
 
     private DcMotor frontLeft, frontRight, backLeft, backRight;

@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.members.ishani.oldcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp()
+// @TeleOp()
 public class Exercise3 extends OpMode {
     @Override
     public void init() {

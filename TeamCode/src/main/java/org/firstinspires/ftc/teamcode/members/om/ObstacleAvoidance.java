@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous(name="Om - Obstacle Avoidance")
+// @Autonomous(name="Om - Obstacle Avoidance")
 public class ObstacleAvoidance extends LinearOpMode {
 
     private DcMotor frontLeftDrive;

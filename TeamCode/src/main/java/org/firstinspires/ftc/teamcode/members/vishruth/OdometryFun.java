@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.FRLib.subsystems.MecanumDrive;
 import org.firstinspires.ftc.teamcode.utils.Logger;
 import org.firstinspires.ftc.teamcode.utils.OurOpmode;
 
-//@TeleOp
+//// @TeleOp
 public class OdometryFun extends OurOpmode {
     //         *  Left of the center is a positive number, right of center is a negative number.
     FieldObject blueGoal = new FieldObject(new Pose2D(DistanceUnit.INCH,-138,138, AngleUnit.DEGREES,0));

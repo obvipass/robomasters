@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@Autonomous(name = "IS - Drive PERFECT Square", group = "ISDrive")
+// @Autonomous(name = "IS - Drive PERFECT Square", group = "ISDrive")
 public class DrivePerfectSquare extends LinearOpMode {
 
     private DcMotor frontLeft, frontRight, backLeft, backRight;

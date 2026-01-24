@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@TeleOp(name = "IS - Field Relative Drive", group = "ISDrive")
+// @TeleOp(name = "IS - Field Relative Drive", group = "ISDrive")
 public class FieldRelativeDrive extends LinearOpMode {
 
     // === MOTORS ===

@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.utils.Logger;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@TeleOp
+// @TeleOp
 public class CompTeleop extends LinearOpMode {
     private final Logger logger = new Logger(telemetry);
     private StarterBot robot;

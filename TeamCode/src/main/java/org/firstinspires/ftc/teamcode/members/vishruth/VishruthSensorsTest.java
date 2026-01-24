@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous
+// @Autonomous
 public class VishruthSensorsTest extends OpMode {
     TouchSensor touchSensor;
     DistanceSensor distanceSensor;

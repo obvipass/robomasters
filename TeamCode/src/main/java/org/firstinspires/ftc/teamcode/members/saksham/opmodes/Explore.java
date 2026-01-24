@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.FRLib.robot.Robot;
 import org.firstinspires.ftc.teamcode.FRLib.subsystems.MecanumDrive;
 import org.firstinspires.ftc.teamcode.utils.Logger;
 
-@Autonomous
+// @Autonomous
 public class Explore extends LinearOpMode {
     Logger logger = new Logger(Logger.LoggerMode.CRITICAL, telemetry);
     double rightDistance;

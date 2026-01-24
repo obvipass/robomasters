@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name = "IS - Crazy Mode Drive", group = "ISDrive")
+// @TeleOp(name = "IS - Crazy Mode Drive", group = "ISDrive")
 public class CrazyMode extends LinearOpMode {
 
     // Declare your motors here

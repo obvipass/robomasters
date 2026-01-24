@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Autonomous(name = "Adi's auto Rotation")
+// @Autonomous(name = "Adi's auto Rotation")
 public class RotationForMe extends LinearOpMode {
     static final double COUNTS_PER_MOTOR_REV = 537.7;// eg: TETRIX Motor Encoder
     static final double COUNTS_PER_DEGREE = 23.34 ; // 8400/360

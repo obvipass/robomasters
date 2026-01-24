@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 
-@TeleOp(name = "Adi's touch sensor")
+// @TeleOp(name = "Adi's touch sensor")
 @Disabled
 public class PressSensor extends LinearOpMode {
 

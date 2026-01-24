@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.FRLib.robot.Robot;
  * Autonomous opmode to test and adjust PID values for the robot drive.
  * Uses gamepad1 buttons/triggers to set P, I, and D terms.
  */
-@Autonomous
+// @Autonomous
 public class PIDTest extends LinearOpMode {
 
     Robot robot;

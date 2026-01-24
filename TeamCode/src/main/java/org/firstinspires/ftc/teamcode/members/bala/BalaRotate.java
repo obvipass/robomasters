@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 // hello
 
-    @Autonomous
+    // @Autonomous
 
     public class BalaRotate extends LinearOpMode {
 

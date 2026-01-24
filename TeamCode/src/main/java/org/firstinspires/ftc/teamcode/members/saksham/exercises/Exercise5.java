@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.utils.Logger;
 
-@TeleOp
+// @TeleOp
 public class Exercise5 extends LinearOpMode {
     RobotLocation robotLocation = new RobotLocation(0);
     Logger logger = new Logger(Logger.LoggerMode.CRITICAL, telemetry);

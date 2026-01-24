@@ -88,7 +88,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
  *  Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous
+// @Autonomous
 public class RobotAutoDriveWithGyro extends LinearOpMode {
 
     /* Declare OpMode members. */

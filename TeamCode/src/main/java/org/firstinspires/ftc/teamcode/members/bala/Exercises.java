@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.members.bala;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name = "Bala Exercises")
+// @TeleOp(name = "Bala Exercises")
 
 public class Exercises extends LinearOpMode {
 

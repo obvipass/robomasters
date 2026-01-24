@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 
-@Autonomous(name = "Adi's corrected movement")
+// @Autonomous(name = "Adi's corrected movement")
 public class MoveWithCorrection extends LinearOpMode {
     static final double COUNTS_PER_MOTOR_REV = 537.7;    // eg: TETRIX Motor Encoder
     static final double OVERSHOOT = 1.036; //over shoot per inch

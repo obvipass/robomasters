@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 
-@Autonomous
+// @Autonomous
 
 public class DodgeAndMove extends LinearOpMode {
 

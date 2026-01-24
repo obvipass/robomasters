@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Autonomous(name = "IS - Strafe Left & Right", group = "ISDrive")
+// @Autonomous(name = "IS - Strafe Left & Right", group = "ISDrive")
 public class StrafeWithEncoders extends LinearOpMode {
 
     private DcMotor frontLeft;

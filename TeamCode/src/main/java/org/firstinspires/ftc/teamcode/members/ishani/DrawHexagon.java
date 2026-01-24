@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@Autonomous(name = "IS - Draw HEXAGON", group = "ISDrive")
+// @Autonomous(name = "IS - Draw HEXAGON", group = "ISDrive")
 public class DrawHexagon extends LinearOpMode {
 
     private DcMotor frontLeft, frontRight, backLeft, backRight;

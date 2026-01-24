@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.FRLib.subsystems.MecanumDrive;
 import org.firstinspires.ftc.teamcode.utils.Logger;
 import org.firstinspires.ftc.teamcode.utils.OurOpmode;
 
-@TeleOp
+// @TeleOp
 public class OurOpmodeTest extends OurOpmode {
     @Override
     protected void Loop() {

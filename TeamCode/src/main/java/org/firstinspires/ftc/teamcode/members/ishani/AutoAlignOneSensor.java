@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous(name = "IS - Auto Align to Backdrop", group = "ISSensor")
+// @Autonomous(name = "IS - Auto Align to Backdrop", group = "ISSensor")
 public class AutoAlignOneSensor extends LinearOpMode {
 
     private DcMotor frontLeft, frontRight, backLeft, backRight;

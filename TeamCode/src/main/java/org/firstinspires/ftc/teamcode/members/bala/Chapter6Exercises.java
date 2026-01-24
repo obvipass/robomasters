@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-@TeleOp
+// @TeleOp
 
 public abstract class Chapter6Exercises extends LinearOpMode {
     private DigitalChannel touchSensor;

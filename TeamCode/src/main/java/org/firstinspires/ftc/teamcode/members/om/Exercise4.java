@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name="Om - Exercise 4", group="Exercises")
+// @TeleOp(name="Om - Exercise 4", group="Exercises")
 public class Exercise4 extends LinearOpMode {
 
     private DcMotor frontLeft = null;

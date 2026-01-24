@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.utils.Logger;
 import org.firstinspires.ftc.teamcode.utils.OurOpmode;
 import org.firstinspires.ftc.teamcode.FRLib.subsystems.VelocityProfilerDynamic;
 
-@TeleOp
+// @TeleOp
 public class MecanumLauncherV2 extends OurOpmode {
     // init variables
     Launcher launcher;

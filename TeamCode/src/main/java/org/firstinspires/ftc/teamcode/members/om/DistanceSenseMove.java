@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous(name="Om - Stop At Object")
+// @Autonomous(name="Om - Stop At Object")
 public class DistanceSenseMove extends LinearOpMode {
 
     private DcMotor frontLeftDrive, frontRightDrive, rearLeftDrive, rearRightDrive;

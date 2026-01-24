@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous
+// @Autonomous
 //setting motors as private
 public class FirstEncoder extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();

@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@Autonomous(name = "IS - Field-Relative HEXAGON", group = "ISDrive")
+// @Autonomous(name = "IS - Field-Relative HEXAGON", group = "ISDrive")
 public class FieldRelativeHexagon extends LinearOpMode {
 
     // ———————— HARDWARE ————————

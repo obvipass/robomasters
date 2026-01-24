@@ -16,7 +16,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Autonomous(name = "IS - Calibrate Turn 90°", group = "ISDrive")
+// @Autonomous(name = "IS - Calibrate Turn 90°", group = "ISDrive")
 public class TurnCalibration extends LinearOpMode {
 
     private DcMotor frontLeft, frontRight, backLeft, backRight;

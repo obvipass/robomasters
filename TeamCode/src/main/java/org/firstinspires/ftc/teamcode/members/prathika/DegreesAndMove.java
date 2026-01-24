@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.members.prathika;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous
+// @Autonomous
 public class DegreesAndMove extends LinearOpMode {
 
     static final double     COUNTS_PER_DEGREE       = 11.06;

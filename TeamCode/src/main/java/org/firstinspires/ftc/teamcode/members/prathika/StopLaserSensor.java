@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous
+// @Autonomous
 public class StopLaserSensor extends LinearOpMode {
     DistanceSensor distanceSensor;
     static final double THRESHOLD = 18.0; //in CM

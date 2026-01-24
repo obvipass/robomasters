@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@TeleOp(name = "TestProgrammingBoard", group = "Test")
+// @TeleOp(name = "TestProgrammingBoard", group = "Test")
 public class TestProgrammingBoard extends OpMode {
 
     DcMotor motor = null;

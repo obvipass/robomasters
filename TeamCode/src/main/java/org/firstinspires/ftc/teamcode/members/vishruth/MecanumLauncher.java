@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.utils.Logger;
 import org.firstinspires.ftc.teamcode.utils.OurOpmode;
 import org.firstinspires.ftc.teamcode.FRLib.subsystems.VelocityProfiler4Stream;
 
-@TeleOp
+// @TeleOp
 public class MecanumLauncher extends OurOpmode {
     Launcher launcher;
     MecanumDrive drive;

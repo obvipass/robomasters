@@ -16,7 +16,7 @@ opMode and using it.
 */
 // 1. already done in FRLib
 // 2. simple math method
-@TeleOp
+// @TeleOp
 public class Exercises7_Saksham extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

@@ -19,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 
-@Autonomous
+// @Autonomous
 
 public class BalaDriveSensor extends LinearOpMode {
 

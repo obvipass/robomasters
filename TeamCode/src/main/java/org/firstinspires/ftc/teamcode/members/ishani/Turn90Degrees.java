@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Autonomous(name = "IS - Turn 90° Left & Right", group = "ISDrive")
+// @Autonomous(name = "IS - Turn 90° Left & Right", group = "ISDrive")
 public class Turn90Degrees extends LinearOpMode {
 
     private DcMotor frontLeft, frontRight, backLeft, backRight;

@@ -33,7 +33,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@Autonomous(name = "IS - Draw STAR Pattern", group = "ISDrive")
+// @Autonomous(name = "IS - Draw STAR Pattern", group = "ISDrive")
 public class DrawStar extends LinearOpMode {
 
     private DcMotor frontLeft, frontRight, backLeft, backRight;

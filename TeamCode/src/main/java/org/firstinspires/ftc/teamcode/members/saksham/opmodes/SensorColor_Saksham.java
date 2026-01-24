@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@TeleOp
+// @TeleOp
 public class SensorColor_Saksham extends LinearOpMode {
 
     /** The colorSensor field will contain a reference to our color sensor hardware object */

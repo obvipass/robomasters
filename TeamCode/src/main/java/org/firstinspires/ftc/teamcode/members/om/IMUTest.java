@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@Autonomous
+// @Autonomous
 public class IMUTest extends LinearOpMode {
 
     private IMU imu;

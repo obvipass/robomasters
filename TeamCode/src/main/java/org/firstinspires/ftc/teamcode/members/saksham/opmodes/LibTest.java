@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.utils.Logger;
 import org.firstinspires.ftc.teamcode.FRLib.robot.Robot;
 import org.firstinspires.ftc.teamcode.FRLib.subsystems.MecanumDrive;
 
-@Autonomous
+// @Autonomous
 public class LibTest extends LinearOpMode {
     Logger logger = new Logger(Logger.LoggerMode.CRITICAL, telemetry);
 

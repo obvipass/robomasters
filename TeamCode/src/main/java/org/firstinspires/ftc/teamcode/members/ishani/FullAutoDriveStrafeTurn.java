@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 // This is your FULL AUTONOMOUS program!
 // It drives forward, strafes left/right, and turns using encoders + IMU
-@Autonomous(name = "IS - Full Auto (FWD + STRAFE + TURN)", group = "ISDrive")
+// @Autonomous(name = "IS - Full Auto (FWD + STRAFE + TURN)", group = "ISDrive")
 public class FullAutoDriveStrafeTurn extends LinearOpMode {
 
     // === YOUR ROBOT PARTS ===

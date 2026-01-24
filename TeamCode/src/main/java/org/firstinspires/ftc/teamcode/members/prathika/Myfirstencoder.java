@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-@Autonomous
+// @Autonomous
 
 public class Myfirstencoder extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();

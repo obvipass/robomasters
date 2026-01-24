@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-@TeleOp(name = "Ishani Sensor Code", group = "Sensor")
+// @TeleOp(name = "Ishani Sensor Code", group = "Sensor")
 @Disabled
 public class SensorCode extends LinearOpMode {
     TouchSensor touchSensor1;  // Touch sensor Object

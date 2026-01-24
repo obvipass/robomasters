@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Autonomous(name = "IS - Auto Find Ticks Per Inch", group = "ISDrive")
+// @Autonomous(name = "IS - Auto Find Ticks Per Inch", group = "ISDrive")
 public class AutoTicksPerInch extends LinearOpMode {
 
     private DcMotor frontLeft, frontRight, backLeft, backRight;

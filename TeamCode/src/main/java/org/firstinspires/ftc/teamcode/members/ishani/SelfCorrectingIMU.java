@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
-@Autonomous(name = "IS - Self-Correcting IMU", group = "ISDrive")
+// @Autonomous(name = "IS - Self-Correcting IMU", group = "ISDrive")
 public class SelfCorrectingIMU extends LinearOpMode {
 
     private IMU imu;

@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous(name = "IS - Stop 10 Inches from Wall", group = "ISSensor")
+// @Autonomous(name = "IS - Stop 10 Inches from Wall", group = "ISSensor")
 public class Stop10InchesFromWall extends LinearOpMode {
 
     // ———————— YOUR ROBOT PARTS ————————
