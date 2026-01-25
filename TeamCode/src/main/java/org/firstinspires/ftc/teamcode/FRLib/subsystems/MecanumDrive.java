@@ -342,7 +342,7 @@ public class MecanumDrive {
             if (done) break;
 
             double currentYaw = imu.getYaw() - startYaw;
-            double error = angleDegrees - currentYaw;
+            double error =  currentYaw - angleDegrees;
 
             error = AngleUnit.normalizeDegrees(error);
 
