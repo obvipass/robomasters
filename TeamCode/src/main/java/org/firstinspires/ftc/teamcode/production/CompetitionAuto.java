@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.production;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.FRLib.robot.DecodeRobot;
 import org.firstinspires.ftc.teamcode.FRLib.subsystems.MecanumDrive;
@@ -9,55 +10,59 @@ import org.firstinspires.ftc.teamcode.utils.Logger;
 
 @Autonomous
 public class CompetitionAuto extends LinearOpMode {
+
+    ElapsedTime timer = new ElapsedTime();
+
+    boolean wait = true;
     Logger logger = new Logger(telemetry);
     DecodeRobot bot;
-    enum RobotPositions {
-        RED_CLOSE,
-        RED_FAR,
-        BLUE_FAR,
-        BLUE_CLOSE;
 
-        RobotPositions next() {
-            switch (this) {
-                case RED_CLOSE:  return RED_FAR;
-                case RED_FAR:    return BLUE_FAR;
-                case BLUE_FAR:   return BLUE_CLOSE;
-                case BLUE_CLOSE: return RED_CLOSE;
-                default: return null;
-            }
+    enum RobotPosition {
+        NEAR,
+        FAR;
+
+        RobotPosition next() {
+            return this == NEAR ? FAR : NEAR;
         }
     }
-    RobotPositions position = RobotPositions.BLUE_CLOSE;
 
+    RobotPosition position = RobotPosition.NEAR;
 
     @Override
     public void runOpMode() {
+
         while (opModeInInit()) {
-            if(gamepad1.bWasPressed()){
+
+            if (gamepad1.bWasPressed()) {
                 position = position.next();
+                logger.logData("Robot Position", position);
+                logger.update();
             }
-            logger.logData("Robot Position",position);
-        }
-        bot = new DecodeRobot(this,logger);
-        waitForStart();
-        switch (position){
-            case RED_CLOSE:
-                bot.drive.driveDistance(MecanumDrive.Direction.FORWARD,24,0.6,false);
-                bot.drive.driveDistance(MecanumDrive.Direction.LEFT,12,0.6,false);
-                break;
-            case BLUE_CLOSE:
-                bot.drive.driveDistance(MecanumDrive.Direction.FORWARD,24,0.6,false);
-                bot.drive.driveDistance(MecanumDrive.Direction.RIGHT,12,0.6,false);
-                break;
-            case RED_FAR:
-                bot.drive.driveDistance(MecanumDrive.Direction.BACKWARD,50,0.6,false);
-                bot.drive.driveDistance(MecanumDrive.Direction.LEFT,36,0.6,false);
-                break;
-            case BLUE_FAR:
-                bot.drive.driveDistance(MecanumDrive.Direction.BACKWARD,50,0.6,false);
-                bot.drive.driveDistance(MecanumDrive.Direction.RIGHT,36,0.6,false);
-                break;
+
+            if (gamepad1.aWasPressed()) {
+                wait = !wait;
+                logger.logData("Wait Or Not?", wait);
+                logger.update();
+            }
         }
 
+        bot = new DecodeRobot(this, logger);
+
+        waitForStart();
+        timer.reset();
+
+        while (timer.seconds() < 20 && wait) {
+            idle();
+        }
+
+        switch (position) {
+            case NEAR:
+                bot.drive.driveStraight(0,24,0.6f);
+                break;
+
+            case FAR:
+                bot.drive.driveStraight(0,100,0.6f);
+                break;
+        }
     }
 }
