@@ -41,7 +41,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
  * See the sensor's product page: https://www.gobilda.com/pinpoint-odometry-computer-imu-sensor-fusion-for-2-wheel-odometry/
  */
 @TeleOp(name = "Sensor: GoBilda Pinpoint", group = "Sensor")
-@Disabled
 public class SensorGoBildaPinpoint extends OpMode {
     // Create an instance of the sensor
     GoBildaPinpointDriver pinpoint;
@@ -101,7 +100,7 @@ public class SensorGoBildaPinpoint extends OpMode {
          * you move the robot to the left.
          */
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD,
-                                      GoBildaPinpointDriver.EncoderDirection.FORWARD);
+                                      GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
         /*
          * Before running the robot, recalibrate the IMU. This needs to happen when the robot is stationary

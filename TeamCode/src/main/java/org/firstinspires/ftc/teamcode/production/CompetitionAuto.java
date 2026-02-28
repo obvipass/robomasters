@@ -62,6 +62,7 @@ public class CompetitionAuto extends LinearOpMode {
 
             case FAR:
                 bot.drive.driveStraight(0,100,0.6f);
+                bot.drive.turnDegreesPID(180,0.6,1.5);
                 break;
         }
     }
