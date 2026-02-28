@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.FRLib.hardware.Distance2mW;
 import org.firstinspires.ftc.teamcode.utils.Logger;
 import org.firstinspires.ftc.teamcode.FRLib.hardware.MotorW;
@@ -153,7 +154,6 @@ public class MecanumDrive {
 
         ElapsedTime timer = new ElapsedTime();
 
-        // Run lightweight PID loop
         while (opMode.opModeIsActive() && timer.milliseconds() < holdTimeMs) {
 
             // Compute position errors
@@ -227,6 +227,46 @@ public class MecanumDrive {
         frontRight.setPower(fr * power);
         rearLeft.setPower(rl * power);
         rearRight.setPower(rr * power);
+    }
+
+    public void driveToPose(Pose2D targetPose,Pose2D currentPose){
+        setMotorZeroPowerBehaviors(DcMotor.ZeroPowerBehavior.BRAKE);
+        double errorX , errorY, errorAngle;
+        double kPLinearX, kPLinearY, kPAngle;
+        errorX = targetPose.getX(DistanceUnit.INCH)-currentPose.getX(DistanceUnit.INCH);
+        errorY = targetPose.getY(DistanceUnit.INCH)-currentPose.getY(DistanceUnit.INCH);
+        errorAngle = targetPose.getHeading(AngleUnit.DEGREES)-currentPose.getHeading(AngleUnit.DEGREES);
+        kPLinearX = 0.19;
+        kPLinearY = 0.15;
+        kPAngle = 0.02;
+
+        double axial = errorX * kPLinearX;
+        double lateral = -errorY * kPLinearY;
+        double yaw = 0;
+        if(Math.abs(errorX)<0.3){
+            axial = 0;
+        } else {
+            axial = errorX * kPLinearX;}
+        if(Math.abs(errorY)<0.3){
+            lateral = 0;
+        } else {
+            lateral = -errorY * kPLinearY;
+        }
+
+//        if(Math.abs(errorX)<0.3 && Math.abs(errorY)<0.3){
+//            yaw = errorAngle*kPAngle;
+//        }
+//        if (Math.abs(errorAngle)<2){
+//            yaw = 0;
+//        }
+
+        opMode.telemetry.addData("X error", errorX);
+        opMode.telemetry.addData("Y error)", errorY);
+        opMode.telemetry.addData("Heading angle (DEGREES)", currentPose.getHeading(AngleUnit.DEGREES));
+        opMode.telemetry.update();
+
+
+        driveVector(axial, lateral, yaw,0.7);
     }
 
 
