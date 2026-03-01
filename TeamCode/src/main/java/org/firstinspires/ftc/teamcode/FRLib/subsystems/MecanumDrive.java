@@ -60,6 +60,8 @@ public class MecanumDrive {
         BOB
     }
 
+
+
     /*
     Init/Constructor
     */
@@ -229,16 +231,14 @@ public class MecanumDrive {
         rearRight.setPower(rr * power);
     }
 
-    public void driveToPose(Pose2D targetPose,Pose2D currentPose){
+    public void driveToPose(Pose2D targetPose,Pose2D currentPose, double power){
         setMotorZeroPowerBehaviors(DcMotor.ZeroPowerBehavior.BRAKE);
         double errorX , errorY, errorAngle;
         double kPLinearX, kPLinearY, kPAngle;
         errorX = targetPose.getX(DistanceUnit.INCH)-currentPose.getX(DistanceUnit.INCH);
         errorY = targetPose.getY(DistanceUnit.INCH)-currentPose.getY(DistanceUnit.INCH);
-        errorAngle = targetPose.getHeading(AngleUnit.DEGREES)-currentPose.getHeading(AngleUnit.DEGREES);
-        kPLinearX = 0.19;
-        kPLinearY = 0.15;
-        kPAngle = 0.02;
+        kPLinearX = 0.1;
+        kPLinearY = 0.1;
 
         double axial = errorX * kPLinearX;
         double lateral = -errorY * kPLinearY;
@@ -253,12 +253,18 @@ public class MecanumDrive {
             lateral = -errorY * kPLinearY;
         }
 
-//        if(Math.abs(errorX)<0.3 && Math.abs(errorY)<0.3){
-//            yaw = errorAngle*kPAngle;
-//        }
-//        if (Math.abs(errorAngle)<2){
-//            yaw = 0;
-//        }
+        if(Math.abs(errorX)<1){
+            kPLinearX = 0.2;
+            axial = errorX * kPLinearX;
+        } else {
+            axial = errorX * kPLinearX;}
+        if(Math.abs(errorY)<1){
+            kPLinearY = 0.2;
+            lateral = -errorY * kPLinearY;
+        } else {
+            lateral = -errorY * kPLinearY;
+        }
+
 
         opMode.telemetry.addData("X error", errorX);
         opMode.telemetry.addData("Y error)", errorY);
@@ -266,7 +272,7 @@ public class MecanumDrive {
         opMode.telemetry.update();
 
 
-        driveVector(axial, lateral, yaw,0.7);
+        driveVector(axial, lateral, yaw,power);
     }
 
 
@@ -476,6 +482,14 @@ public class MecanumDrive {
 
         stop();
     }
+    public void turnDegrees(double targetAngle, double power, double kP, double currentAngle) {
+        double yaw = (targetAngle - currentAngle) * kP;
+        if(Math.abs(yaw)<1){
+            yaw = 0;
+        }
+        driveVector(0,0,yaw,power);
+    }
+
 
 
     /*
