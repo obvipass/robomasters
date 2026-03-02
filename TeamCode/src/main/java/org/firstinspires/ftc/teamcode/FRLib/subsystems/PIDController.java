@@ -1,20 +1,22 @@
 package org.firstinspires.ftc.teamcode.FRLib.subsystems;
 
+import com.qualcomm.robotcore.util.Range;
+
 import org.firstinspires.ftc.teamcode.utils.Logger;
 
 public class PIDController {
-    private double kP, kI, kD;
-
-    private double prevError = 0.0;
-    private double integral = 0.0;
-    private boolean firstUpdate = true;
-
     private double minOutput = -1.0;
     private double maxOutput =  1.0;
+    private final double maxIntegral = 1;
+    private final double minIntegral = -1;
+    private double kP, kI, kD;
+    private double prevError = 0.0;
+    private double integral = 0.0;
 
+    private boolean firstUpdate = true;
     private long lastTimeNanos = 0;
 
-    Logger logger;
+    private final Logger logger;
 
     public PIDController(double kP, double kI, double kD, Logger logger) {
         this.kP = kP;
@@ -47,23 +49,22 @@ public class PIDController {
         }
 
         integral += error * dt;
+        integral = Range.clip(integral, minIntegral, maxIntegral);
 
-        double output = kP * error + kI * integral + kD * derivative;
+        double output = (kP * error) + (kI * integral) + (kD * derivative);
+        output = Range.clip(output, minOutput, maxOutput);
 
         prevError = error;
 
-        // clamp
-        if (output > maxOutput) output = maxOutput;
-        if (output < minOutput) output = minOutput;
 
         return output;
     }
 
     public double getOutput(double target, double current) {
-        logger.logData(Logger.LoggerMode.CRITICAL, "Target", target);
-        logger.logData(Logger.LoggerMode.CRITICAL, "Current", current);
+        logger.logData(Logger.LoggerMode.DETAILED, "PID Target", target);
+        logger.logData(Logger.LoggerMode.DETAILED, "PID Current", current);
 
-        return getOutput(target - current);
+        return this.getOutput(target - current);
     }
 
     public void reset() {
